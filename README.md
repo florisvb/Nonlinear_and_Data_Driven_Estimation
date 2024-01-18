@@ -1,5 +1,7 @@
 # Code accompanying my class on nonlinear and data driven estimation
 
+[Tips on getting started with GitHub, Google Colab, and Docker](github_colab_tips.md)
+
 ## Week 1: Linear Least Squares (batch)
 
 Includes:
