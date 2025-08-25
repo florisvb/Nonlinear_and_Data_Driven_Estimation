@@ -1,25 +1,35 @@
-# Code accompanying my class on nonlinear and data driven estimation
+# Nonlinear and Data Driven Estimation
+
+This repository accompanies a course I teach at UNR on nonlinear and data driven estimation.
 
 [Tips on getting started with GitHub, Google Colab, and Docker](github_colab_tips.md)
 
-## Week 1: Linear Least Squares (batch)
+## Lesson 1: Dynamics Demo
 
 Includes:
-  *  Parameter estimation example
-  *  Linear least squares
-  *  Least squares connection to statistics 
+  *  Example of defining a nonlinear dynamical system as a control affine system, and simulating the system with python using model predictive control.
+  *  Example showing how to create an animation of the simulated system with matplotlib. 
 
-## Week 2: Minimum Variance
+## Lesson 2: Batch least squares
+
+Includes:
+  *  Parameter estimation with batch least squares 
+  *  Relation to statistics
+
+## Lesson 3: Sequential least squares
 
 Includes:
   *  Linear sequential estimation
   *  Random variables, covariance
-  *  Minimum variance estimation
-  *  Cramer Rao
 
-## Week 3: Full order and Kalman filter
+## Lesson 4: Minimum variance estimation
 
 Includes:
-  *  Planar drone example
-  *  Linearization example
-  *  Discrete linear Kalman filter
+  *  Minimum variance estimation
+  *  Cramer Rao Bound
+
+## Lesson 5: Linear discrete Kalman filter
+
+Includes:
+  *  Linearizing and discretizing a continuous time nonlinear model
+  *  Discrete linear kalman filter
