@@ -178,7 +178,7 @@ def h_camera_imu_notheta(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=F
 
     # Model for acceleration -- these come from the model
     accel_x = -k * np.sin(theta) / m
-    accel_z = -g / m + k * np.cos(theta) / m
+    accel_z = -g + k * np.cos(theta) / m
 
     # Measurements
     y_vec = np.array([x_dot/z, theta_dot, accel_x, accel_z])
@@ -205,7 +205,7 @@ def h_camera_imu(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 
     # Model for acceleration -- these come from the model
     accel_x = -k * np.sin(theta) / m
-    accel_z = -g / m + k * np.cos(theta) / m
+    accel_z = -g + k * np.cos(theta) / m
 
     # Measurements
     y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z])
@@ -232,7 +232,7 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 
     # Model for acceleration -- these come from the model
     accel_x = -k * np.sin(theta) / m
-    accel_z = -g / m + k * np.cos(theta) / m
+    accel_z = -g + k * np.cos(theta) / m
 
     # Measurements
     y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z, k])
