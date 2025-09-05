@@ -243,14 +243,18 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(h=h_gps, tsim_length=20, dt=0.1):
+def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None):
     # set state and input names
     state_names = ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
     input_names = ['j1', 'j2']
     
     # choose the measurement function
-    measurement_names = h(None, None, return_measurement_names=True) 
-
+    if measurement_names is None:
+        try:
+            measurement_names = h(None, None, return_measurement_names=True) 
+        except:
+            raise ValueError('Need to provide measurement_names as a list of strings')
+            
     # initialize simulator
     simulator = pybounds.Simulator(f, h, dt=dt, state_names=state_names, 
                                    input_names=input_names, measurement_names=measurement_names, mpc_horizon=int(1/dt))
