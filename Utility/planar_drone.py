@@ -243,7 +243,10 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None):
+def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle'):
+    """
+    trajectory_shape: 'squiggle', 'alternating' 
+    """
     # set state and input names
     state_names = ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
     input_names = ['j1', 'j2']
@@ -254,7 +257,7 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None):
             measurement_names = h(None, None, return_measurement_names=True) 
         except:
             raise ValueError('Need to provide measurement_names as a list of strings')
-            
+
     # initialize simulator
     simulator = pybounds.Simulator(f, h, dt=dt, state_names=state_names, 
                                    input_names=input_names, measurement_names=measurement_names, mpc_horizon=int(1/dt))
@@ -262,14 +265,54 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None):
     # First define the set-point(s) to follow
     tsim = np.arange(0, tsim_length, step=dt)
     NA = np.zeros_like(tsim)
-    setpoint = {'theta': NA,
-                'theta_dot': NA,
-                'x': 2.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
-                'x_dot': NA,
-                'z': 0.3*np.sin(2*np.pi*tsim*0.2)+0.5, # altitude also oscillates
-                'z_dot': NA,
-                'k': np.ones_like(tsim),
-               }
+
+    if trajectory_shape == 'squiggle':
+        setpoint = {'theta': NA,
+                    'theta_dot': NA,
+                    'x': 2.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
+                    'x_dot': NA,
+                    'z': 0.3*np.sin(2*np.pi*tsim*0.2)+0.5, # altitude also oscillates
+                    'z_dot': NA,
+                    'k': np.ones_like(tsim),
+                   }
+    elif trajectory_shape == 'alternating':
+
+        a = 0
+        b = int(len(tsim)/4.)
+        c = int(len(tsim)*2/4.)
+        d = int(len(tsim)*3/4.)
+        e = -1
+        
+        accel_x = np.hstack((2.0*np.cos(2*np.pi*tsim*0.3)[a:b],
+                          0*tsim[b:c],
+                          2.0*np.cos(2*np.pi*tsim*0.3)[c:d],
+                          0*tsim[d:e]))
+        xvel = np.cumsum(accel_x)*dt
+        xpos = 5*np.cumsum(xvel)*dt
+        if len(xpos) > len(tsim):
+            xpos = xpos[0:len(tsim)]
+        if len(xpos) < len(tsim):
+            xpos = np.hstack((xpos, [xpos[-1]]*(len(tsim)-len(xpos))))
+        
+        accel_z = np.hstack((0.1*np.sin(2*np.pi*tsim*0.2)[a:b],
+                          0*tsim[b:c],
+                          -0.1*np.sin(2*np.pi*tsim*0.2)[c:d],
+                          0*tsim[d:e]))
+        zvel = np.cumsum(accel_z)*dt
+        zpos = 5*np.cumsum(zvel)*dt + 1
+        if len(zpos) > len(tsim):
+            zpos = zpos[0:len(tsim)]
+        if len(zpos) < len(tsim):
+            zpos = np.hstack((zpos, [zpos[-1]]*(len(tsim)-len(zpos))))
+
+        setpoint = {'theta': NA,
+                    'theta_dot': NA,
+                    'x': xpos,  
+                    'x_dot': NA,
+                    'z': zpos, 
+                    'z_dot': NA,
+                    'k': np.ones_like(tsim),
+                   }
 
     # Update the simulator set-point
     simulator.update_dict(setpoint, name='setpoint')
@@ -296,4 +339,3 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None):
 
     # Return
     return t_sim, x_sim, u_sim, y_sim, simulator
-
