@@ -243,7 +243,7 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle', setpoint=None):
+def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle', setpoint=None, rterm=1e-4):
     """
     trajectory_shape: 'squiggle', 'alternating' 
     """
@@ -329,7 +329,7 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, traj
     simulator.mpc.set_objective(mterm=cost, lterm=cost)  # objective function
 
     # Set input penalty: make this small for accurate state tracking
-    simulator.mpc.set_rterm(j1=1e-4, j2=1e-4)
+    simulator.mpc.set_rterm(j1=rterm, j2=rterm)
 
     # Set bounds on states and controls
     simulator.mpc.bounds['lower', '_x', 'theta'] = -np.pi/4
