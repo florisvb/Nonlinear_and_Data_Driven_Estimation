@@ -243,7 +243,7 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle'):
+def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle', setpoint=None):
     """
     trajectory_shape: 'squiggle', 'alternating' 
     """
@@ -266,53 +266,56 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, traj
     tsim = np.arange(0, tsim_length, step=dt)
     NA = np.zeros_like(tsim)
 
-    if trajectory_shape == 'squiggle':
-        setpoint = {'theta': NA,
-                    'theta_dot': NA,
-                    'x': 2.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
-                    'x_dot': NA,
-                    'z': 0.3*np.sin(2*np.pi*tsim*0.2)+0.5, # altitude also oscillates
-                    'z_dot': NA,
-                    'k': np.ones_like(tsim),
-                   }
-    elif trajectory_shape == 'alternating':
+    if setpoint is None:
+        assert trajectory_shape in ['squiggle', 'alternating']
 
-        a = 0
-        b = int(len(tsim)/4.)
-        c = int(len(tsim)*2/4.)
-        d = int(len(tsim)*3/4.)
-        e = -1
-        
-        accel_x = np.hstack((2.0*np.cos(2*np.pi*tsim*0.3)[a:b],
-                          0*tsim[b:c],
-                          2.0*np.cos(2*np.pi*tsim*0.3)[c:d],
-                          0*tsim[d:e]))
-        xvel = np.cumsum(accel_x)*dt
-        xpos = 5*np.cumsum(xvel)*dt
-        if len(xpos) > len(tsim):
-            xpos = xpos[0:len(tsim)]
-        if len(xpos) < len(tsim):
-            xpos = np.hstack((xpos, [xpos[-1]]*(len(tsim)-len(xpos))))
-        
-        accel_z = np.hstack((0.1*np.sin(2*np.pi*tsim*0.2)[a:b],
-                          0*tsim[b:c],
-                          -0.1*np.sin(2*np.pi*tsim*0.2)[c:d],
-                          0*tsim[d:e]))
-        zvel = np.cumsum(accel_z)*dt
-        zpos = 5*np.cumsum(zvel)*dt + 1
-        if len(zpos) > len(tsim):
-            zpos = zpos[0:len(tsim)]
-        if len(zpos) < len(tsim):
-            zpos = np.hstack((zpos, [zpos[-1]]*(len(tsim)-len(zpos))))
+        if trajectory_shape == 'squiggle':
+            setpoint = {'theta': NA,
+                        'theta_dot': NA,
+                        'x': 2.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
+                        'x_dot': NA,
+                        'z': 0.3*np.sin(2*np.pi*tsim*0.2)+0.5, # altitude also oscillates
+                        'z_dot': NA,
+                        'k': np.ones_like(tsim),
+                       }
+        elif trajectory_shape == 'alternating':
 
-        setpoint = {'theta': NA,
-                    'theta_dot': NA,
-                    'x': xpos,  
-                    'x_dot': NA,
-                    'z': zpos, 
-                    'z_dot': NA,
-                    'k': np.ones_like(tsim),
-                   }
+            a = 0
+            b = int(len(tsim)/4.)
+            c = int(len(tsim)*2/4.)
+            d = int(len(tsim)*3/4.)
+            e = -1
+            
+            accel_x = np.hstack((2.0*np.cos(2*np.pi*tsim*0.3)[a:b],
+                              0*tsim[b:c],
+                              2.0*np.cos(2*np.pi*tsim*0.3)[c:d],
+                              0*tsim[d:e]))
+            xvel = np.cumsum(accel_x)*dt
+            xpos = 5*np.cumsum(xvel)*dt
+            if len(xpos) > len(tsim):
+                xpos = xpos[0:len(tsim)]
+            if len(xpos) < len(tsim):
+                xpos = np.hstack((xpos, [xpos[-1]]*(len(tsim)-len(xpos))))
+            
+            accel_z = np.hstack((0.1*np.sin(2*np.pi*tsim*0.2)[a:b],
+                              0*tsim[b:c],
+                              -0.1*np.sin(2*np.pi*tsim*0.2)[c:d],
+                              0*tsim[d:e]))
+            zvel = np.cumsum(accel_z)*dt
+            zpos = 5*np.cumsum(zvel)*dt + 1
+            if len(zpos) > len(tsim):
+                zpos = zpos[0:len(tsim)]
+            if len(zpos) < len(tsim):
+                zpos = np.hstack((zpos, [zpos[-1]]*(len(tsim)-len(zpos))))
+
+            setpoint = {'theta': NA,
+                        'theta_dot': NA,
+                        'x': xpos,  
+                        'x_dot': NA,
+                        'z': zpos, 
+                        'z_dot': NA,
+                        'k': np.ones_like(tsim),
+                       }
 
     # Update the simulator set-point
     simulator.update_dict(setpoint, name='setpoint')
