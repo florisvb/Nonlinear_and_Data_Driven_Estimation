@@ -103,7 +103,7 @@ class F(object):
         # combined dynamics
         x_dot_vec = f0_contribution + f1_contribution + f2_contribution
         
-        if k is None:
+        if self.k is None:
             return x_dot_vec
         else:
             return x_dot_vec[0:6]
