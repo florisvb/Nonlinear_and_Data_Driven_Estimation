@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 import scipy.optimize
 
+from scipy import interpolate
+
 import pybounds
 
 ############################################################################################
@@ -17,7 +19,7 @@ Iyy = 0.02 # moment of inertia (e.g. 1/12*m*L**2 for a solid rod, as an approxim
 ############################################################################################
 # continuos time dynamics function
 ############################################################################################
-def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, return_state_names=False):
+def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, k=None, return_state_names=False):
     """
     Continuous time dynamics function for the system shown in the equation.
     
@@ -32,14 +34,24 @@ def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, return_state_names=False):
         drone mass
     g : float, default 9.81
         Gravitational acceleration
+    k : float, default None
+        motor control coefficient, None means that it is part of the state, if a value is specified, then it is not part of the state
     
     Returns:
     x_dot : numpy array, shape (7,)
         Time derivative of state vector
     """
 
+    if k is None:
+        assert len(x_vec) == 7
+    elif k is not None:
+        assert len(x_vec) == 6
+
     if return_state_names:
-        return ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
+        if k is None:
+            return ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
+        else:
+            return ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot']
     
     # Extract state variables
     theta = x_vec[0]
@@ -48,7 +60,8 @@ def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, return_state_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    if k is None:
+        k = x_vec[6]
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -84,7 +97,10 @@ def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, return_state_names=False):
     # combined dynamics
     x_dot_vec = f0_contribution + f1_contribution + f2_contribution
     
-    return x_dot_vec
+    if k is None:
+        return x_dot_vec
+    else:
+        return x_dot_vec[0:6]
 
 
 ############################################################################################
@@ -101,7 +117,10 @@ def h_gps(x_vec, u_vec, return_measurement_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -124,7 +143,11 @@ def h_camera_theta_k(x_vec, u_vec, return_measurement_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
+        
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -147,7 +170,11 @@ def h_camera_thetadot_k(x_vec, u_vec, return_measurement_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
+        
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -170,7 +197,11 @@ def h_camera_imu_notheta(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=F
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
+        
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -197,7 +228,11 @@ def h_camera_imu(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
+        
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -224,7 +259,11 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
     x_dot = x_vec[3]
     z = x_vec[4]
     z_dot = x_vec[5]
-    k = x_vec[6]
+    try:
+        k = x_vec[6]
+    except:
+        pass
+        
 
     # Extract control inputs
     j1 = u_vec[0]
@@ -243,12 +282,13 @@ def h_camera_imu_k(x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, trajectory_shape='squiggle', setpoint=None, rterm=1e-4):
+def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, k=None,
+                    trajectory_shape='squiggle', setpoint=None, rterm=1e-4):
     """
     trajectory_shape: 'squiggle', 'alternating' 
     """
     # set state and input names
-    state_names = ['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
+    state_names = f(None, None, k=k, return_state_names=True) #['theta', 'theta_dot', 'x', 'x_dot', 'z', 'z_dot', 'k']
     input_names = ['j1', 'j2']
     
     # choose the measurement function
@@ -267,7 +307,7 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, traj
     NA = np.zeros_like(tsim)
 
     if setpoint is None:
-        assert trajectory_shape in ['squiggle', 'alternating']
+        assert trajectory_shape in ['squiggle', 'alternating', 'random']
 
         if trajectory_shape == 'squiggle':
             setpoint = {'theta': NA,
@@ -316,6 +356,30 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, traj
                         'z_dot': NA,
                         'k': np.ones_like(tsim),
                        }
+        elif trajectory_shape == 'random':
+            tsim_length = 10
+            tsim = np.arange(0, tsim_length, step=dt)
+
+            x_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=42)
+            z_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=24)
+
+            x_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=42)
+            z_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=24)
+
+            tsim = np.arange(0, tsim_length*2, step=dt)
+            tsim_length = tsim_length*2
+            NA = np.zeros_like(tsim)
+            setpoint = {'theta': NA,
+                        'theta_dot': NA,
+                        'x': np.hstack((x_curve_1,x_curve_2)),  
+                        'x_dot': NA,
+                        'z': np.hstack((z_curve_1,z_curve_2)) + 5, 
+                        'z_dot': NA,
+                        'k': np.ones_like(tsim),
+                       }
+
+    if k is not None:
+        del(setpoint['k'])
 
     # Update the simulator set-point
     simulator.update_dict(setpoint, name='setpoint')
@@ -342,3 +406,76 @@ def simulate_drone(h=h_gps, tsim_length=20, dt=0.1, measurement_names=None, traj
 
     # Return
     return t_sim, x_sim, u_sim, y_sim, simulator
+
+###############################################################################################
+# Misc helper functions
+###############################################################################################
+
+# From Claude
+def generate_smooth_curve(t_points, method='spline', smoothness=0.1, amplitude=1.0, seed=None):
+    """
+    Generate a smooth random curve as a function of time points.
+    
+    Parameters:
+    -----------
+    t_points : array-like
+        Time points where the curve should be evaluated
+    method : str, default='spline'
+        Method to use: 'spline', 'sine_sum', or 'noise_filter'
+    smoothness : float, default=0.1
+        Controls curve smoothness (interpretation varies by method)
+    amplitude : float, default=1.0
+        Maximum amplitude of the curve
+    seed : int, optional
+        Random seed for reproducibility
+    
+    Returns:
+    --------
+    numpy.ndarray
+        Smooth curve values at the given time points
+    """
+    
+    if seed is not None:
+        np.random.seed(seed)
+    
+    t_points = np.array(t_points)
+    
+    if method == 'spline':
+        # Generate random control points and interpolate with splines
+        n_control = max(5, int(len(t_points) * smoothness))
+        control_t = np.linspace(t_points[0], t_points[-1], n_control)
+        control_y = np.random.normal(0, amplitude/3, n_control) # < I modified, used to  be uniform(-amp, amp)
+        
+        # Use cubic spline interpolation
+        spline = interpolate.CubicSpline(control_t, control_y)
+        return spline(t_points)
+    
+    elif method == 'sine_sum':
+        # Sum of random sine waves with different frequencies
+        n_harmonics = max(3, int(20 * smoothness))
+        result = np.zeros_like(t_points, dtype=float)
+        
+        for i in range(n_harmonics):
+            freq = np.random.exponential(1.0 / smoothness)
+            phase = np.random.uniform(0, 2 * np.pi)
+            amp = np.random.uniform(0, amplitude) / (i + 1)  # Decay higher frequencies
+            result += amp * np.sin(2 * np.pi * freq * t_points + phase)
+        
+        return result
+    
+    elif method == 'noise_filter':
+        # Generate noise and apply low-pass filtering
+        from scipy.signal import butter, filtfilt
+        
+        # Generate random noise
+        noise = np.random.normal(0, amplitude, len(t_points))
+        
+        # Apply low-pass filter
+        nyquist = 0.5 * len(t_points) / (t_points[-1] - t_points[0])
+        cutoff = nyquist * smoothness
+        b, a = butter(3, cutoff / nyquist, btype='low')
+        
+        return filtfilt(b, a, noise)
+    
+    else:
+        raise ValueError("Method must be 'spline', 'sine_sum', or 'noise_filter'")
