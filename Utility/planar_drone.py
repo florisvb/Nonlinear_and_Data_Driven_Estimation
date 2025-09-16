@@ -42,10 +42,11 @@ def f(x_vec, u_vec, m=m, g=g, L=L, I=Iyy, k=None, return_state_names=False):
         Time derivative of state vector
     """
 
-    if k is None:
-        assert len(x_vec) == 7
-    elif k is not None:
-        assert len(x_vec) == 6
+    if x_vec is not None:
+        if k is None:
+            assert len(x_vec) == 7
+        elif k is not None:
+            assert len(x_vec) == 6
 
     if return_state_names:
         if k is None:
