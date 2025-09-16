@@ -295,7 +295,7 @@ class H(object):
 ############################################################################################
 # drone simulation
 ############################################################################################
-def simulate_drone(f, h=h_gps, tsim_length=20, dt=0.1, measurement_names=None,
+def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
                     trajectory_shape='squiggle', setpoint=None, rterm=1e-4):
     """
     trajectory_shape: 'squiggle', 'alternating' 
