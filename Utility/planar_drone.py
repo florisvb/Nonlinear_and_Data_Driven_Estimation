@@ -370,8 +370,8 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
                         'k': np.ones_like(tsim),
                        }
         elif trajectory_shape == 'constant_thetadot':
-            freq = 0.03
-            amp = 0.06
+            freq = 0.15
+            amp = 0.15
             theta_dot = amp*np.sign(np.cos(tsim*2*np.pi*freq))
 
             zpos = np.ones_like(theta_dot)*3
