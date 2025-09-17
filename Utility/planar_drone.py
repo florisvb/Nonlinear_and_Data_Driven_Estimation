@@ -376,8 +376,8 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
             x_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=42)
             z_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=24)
 
-            x_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=42)
-            z_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=24)
+            x_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.04, amplitude=5.0, seed=3)
+            z_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.04, amplitude=5.0, seed=3)
 
             x_curve_3 = generate_smooth_curve(tsim, method='spline', smoothness=0.07, amplitude=1.0, seed=2)
             z_curve_3 = generate_smooth_curve(tsim, method='spline', smoothness=0.07, amplitude=1.0, seed=2)
