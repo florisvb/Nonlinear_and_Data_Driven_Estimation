@@ -320,7 +320,7 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
     NA = np.zeros_like(tsim)
 
     if setpoint is None:
-        assert trajectory_shape in ['squiggle', 'alternating', 'random']
+        assert trajectory_shape in ['squiggle', 'alternating', 'random', 'constant_thetadot']
 
         if trajectory_shape == 'squiggle':
             setpoint = {'theta': NA,
@@ -369,6 +369,23 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
                         'z_dot': NA,
                         'k': np.ones_like(tsim),
                        }
+        elif trajectory_shape == 'constant_thetadot':
+
+            freq = 0.1
+            amp = 1
+            theta_dot = amp*np.sign(np.sin(tsim*2*np.pi*freq))
+
+            zpos = np.ones_like(theta_dot)*3
+
+            setpoint = {'theta': NA,
+                        'theta_dot': theta_dot,
+                        'x': NA,  
+                        'x_dot': NA,
+                        'z': zpos, 
+                        'z_dot': NA,
+                        'k': np.ones_like(tsim),
+                       }
+
         elif trajectory_shape == 'random':
             tsim_length_part = tsim_length/3.
             tsim = np.arange(0, tsim_length_part, step=dt)
