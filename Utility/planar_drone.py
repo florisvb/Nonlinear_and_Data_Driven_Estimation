@@ -419,9 +419,15 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
     simulator.update_dict(setpoint, name='setpoint')
 
     # Define MPC cost function: penalize the squared error between the setpoint for g and the true g
-    cost_x = (simulator.model.x['x'] - simulator.model.tvp['x_set']) ** 2
-    cost_z = (simulator.model.x['z'] - simulator.model.tvp['z_set']) ** 2
-    cost = cost_x + cost_z 
+    if trajectory_shape in ['squiggle', 'alternating', 'random']:
+        cost_x = (simulator.model.x['x'] - simulator.model.tvp['x_set']) ** 2
+        cost_z = (simulator.model.x['z'] - simulator.model.tvp['z_set']) ** 2
+        cost = cost_x + cost_z 
+    elif trajectory_shape in ['constant_thetadot',]:
+        cost_theta_dot = (simulator.model.x['theta_dot'] - simulator.model.tvp['theta_dot_set']) ** 2
+        cost_z = (simulator.model.x['z'] - simulator.model.tvp['z_set']) ** 2
+        cost = cost_theta_dot + cost_z 
+
 
     # Set cost function
     simulator.mpc.set_objective(mterm=cost, lterm=cost)  # objective function
