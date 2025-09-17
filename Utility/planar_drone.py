@@ -370,8 +370,8 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
                         'k': np.ones_like(tsim),
                        }
         elif trajectory_shape == 'random':
-            tsim_length_half = tsim_length/2
-            tsim = np.arange(0, tsim_length_half, step=dt)
+            tsim_length_part = tsim_length/3.
+            tsim = np.arange(0, tsim_length_part, step=dt)
 
             x_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=42)
             z_curve_1 = generate_smooth_curve(tsim, method='spline', smoothness=0.15, amplitude=3.0, seed=24)
@@ -379,14 +379,17 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
             x_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=42)
             z_curve_2 = generate_smooth_curve(tsim, method='spline', smoothness=0.02, amplitude=3.0, seed=24)
 
-            tsim = np.arange(0, tsim_length, step=dt)
-            tsim_length = tsim_length*2
+            x_curve_3 = generate_smooth_curve(tsim, method='spline', smoothness=0.07, amplitude=1.0, seed=2)
+            z_curve_3 = generate_smooth_curve(tsim, method='spline', smoothness=0.07, amplitude=1.0, seed=2)
+
+            tsim = np.arange(0, len(tsim)*3*dt, step=dt)
+            tsim_length = len(tsim)*3*dt
             NA = np.zeros_like(tsim)
             setpoint = {'theta': NA,
                         'theta_dot': NA,
-                        'x': np.hstack((x_curve_1,x_curve_2)),  
+                        'x': np.hstack((x_curve_1,x_curve_2,x_curve_3)),  
                         'x_dot': NA,
-                        'z': np.hstack((z_curve_1,z_curve_2)) + 5, 
+                        'z': np.hstack((z_curve_1,z_curve_2,z_curve_3)) + 5, 
                         'z_dot': NA,
                         'k': np.ones_like(tsim),
                        }
