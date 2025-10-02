@@ -1,0 +1,22 @@
+\textbf{Dynamics and Measurement Model} \\ \\
+\mathbf{x_{k+1}}=A \mathbf{x_k} + B \mathbf{u_k} + \mathbf{w_k} \\
+\mathbf{y_{k}}=C \mathbf{x_k} + D \mathbf{u_k} + \mathbf{v_k} \\
+\\
+\textbf{Gain} \\ \\
+K_k = P_k^-C_k^T[C_kP_k^-C_k^T+R_k]^{-1} \\
+\\
+\textbf{Update step} \\
+\mathbf{\hat{x}_k^+} \text{ is the} \textit{ a posteriori} \text{ estimate,} \\ \text{ after including measurements } \\ \\
+\mathbf{\hat{x}_k^+} = \mathbf{\hat{x}_k^-} + K_k[\mathbf{\tilde{y}_k}-C_k\mathbf{\hat{x}_k^-}] \\
+P_k^+ = [I-K_kH_k]P_k^- \\
+\\
+\textbf{Propagate step} \\
+\mathbf{\hat{x}_k^-} \text{ is the} \textit{ a priori} \text{ estimate, } \\ \text{i.e. prior estimate propagated through the dynamics } \\ \\
+\mathbf{\hat{x}_{k+1}^-} = A_k\mathbf{\hat{x}_k^+}+B_k\mathbf{u}_k \\
+P_{k+1}^- = A_kP_k^+A_k^T + Q_k
+\\
+\textbf{Cramer Rao Bound} \\
+J_k \text{represents the bottom right corner of the trajectory Fisher information matrix}
+J_0 = P_0^{-1} \\
+J_{k+1} = Q_k^{-1} - Q_k^{-1}A_k(J_k + A_k^T Q_k^{-1} A_k)^{-1} A_k^T Q_k^{-1} \\
++ H_{k+1}^T R_{k+1}^{-1} H_{k+1}
