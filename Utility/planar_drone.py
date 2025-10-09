@@ -292,6 +292,37 @@ class H(object):
         # Return measurement
         return y_vec
 
+    def h_all(self, x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
+        if return_measurement_names:
+            return ['optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z', 'k']
+
+        # Extract state variables
+        theta = x_vec[0]
+        theta_dot = x_vec[1]
+        x = x_vec[2]
+        x_dot = x_vec[3]
+        z = x_vec[4]
+        z_dot = x_vec[5]
+        if self.k is None:
+            k = x_vec[6]
+        else:
+            k = self.k
+            
+
+        # Extract control inputs
+        j1 = u_vec[0]
+        j2 = u_vec[1]
+
+        # Model for acceleration -- these come from the model
+        accel_x = -k * np.sin(theta) / m
+        accel_z = -g + k * np.cos(theta) / m
+
+        # Measurements
+        y_vec = np.array([x, z, x_dot/z, theta, theta_dot, accel_x, accel_z, k])
+
+        # Return measurement
+        return y_vec
+
 ############################################################################################
 # drone simulation
 ############################################################################################
