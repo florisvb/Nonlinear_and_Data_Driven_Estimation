@@ -221,8 +221,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta) / m
-        accel_z = -g + k * np.cos(theta) / m
+        accel_x = -k * np.sin(theta)*j1 / m
+        accel_z = -g + k * np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta_dot, accel_x, accel_z])
@@ -252,8 +252,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta) / m
-        accel_z = -g + k * np.cos(theta) / m
+        accel_x = -k * np.sin(theta)*j1 / m
+        accel_z = -g + k * np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z])
@@ -283,8 +283,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta) / m
-        accel_z = -g + k * np.cos(theta) / m
+        accel_x = -k * np.sin(theta)*j1 / m
+        accel_z = -g + k * np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z, k])
@@ -314,8 +314,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta) / m
-        accel_z = -g + k * np.cos(theta) / m
+        accel_x = -k * np.sin(theta)*j1 / m
+        accel_z = -g + k * np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x, z, x_dot/z, theta, theta_dot, accel_x, accel_z, k])
