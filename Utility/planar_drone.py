@@ -294,7 +294,7 @@ class H(object):
 
     def h_all(self, x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
         if return_measurement_names:
-            return ['optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z', 'k']
+            return ['x', 'z', 'optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z', 'k']
 
         # Extract state variables
         theta = x_vec[0]
