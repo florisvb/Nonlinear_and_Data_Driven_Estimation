@@ -221,8 +221,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta)*j1 / m
-        accel_z = -g + k * np.cos(theta)*j2 / m
+        accel_x = -k*j1 - k*np.sin(theta)*j2 / m
+        accel_z = -g + k*np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta_dot, accel_x, accel_z])
@@ -252,8 +252,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta)*j1 / m
-        accel_z = -g + k * np.cos(theta)*j2 / m
+        accel_x = -k*j1 - k*np.sin(theta)*j2 / m
+        accel_z = -g + k*np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z])
@@ -314,8 +314,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta)*j1 / m
-        accel_z = -g + k * np.cos(theta)*j2 / m
+        accel_x = -k*j1 - k*np.sin(theta)*j2 / m
+        accel_z = -g + k*np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x, z, x_dot/z, theta, theta_dot, accel_x, accel_z, k])
@@ -507,7 +507,7 @@ def generate_smooth_curve(t_points, method='spline', smoothness=0.1, amplitude=1
     """
     
     if seed is not None:
-        np.random.seed(seed)
+        rng = np.random.default_rng(seed)
     
     t_points = np.array(t_points)
     
