@@ -507,7 +507,7 @@ def generate_smooth_curve(t_points, method='spline', smoothness=0.1, amplitude=1
     """
     
     if seed is not None:
-        np.random.seed(seed)
+        rng = np.random.default_rng(seed)
     
     t_points = np.array(t_points)
     
