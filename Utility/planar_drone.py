@@ -283,8 +283,8 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k * np.sin(theta)*j1 / m
-        accel_z = -g + k * np.cos(theta)*j2 / m
+        accel_x = -k*j1 - k*np.sin(theta)*j2 / m
+        accel_z = -g + k*np.cos(theta)*j2 / m
 
         # Measurements
         y_vec = np.array([x_dot/z, theta, theta_dot, accel_x, accel_z, k])
