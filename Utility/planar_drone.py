@@ -125,6 +125,9 @@ class H(object):
         if return_measurement_names:
             return ['theta', 'x', 'z', 'k']
 
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
+        
         # Extract state variables
         theta = x_vec[0]
         theta_dot = x_vec[1]
@@ -148,6 +151,9 @@ class H(object):
     def h_camera_theta_k(self, x_vec, u_vec, return_measurement_names=False):
         if return_measurement_names:
             return ['optic_flow', 'theta', 'k']
+
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
 
         # Extract state variables
         theta = x_vec[0]
@@ -176,6 +182,9 @@ class H(object):
         if return_measurement_names:
             return ['optic_flow', 'theta_dot', 'k']
 
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
+
         # Extract state variables
         theta = x_vec[0]
         theta_dot = x_vec[1]
@@ -202,6 +211,9 @@ class H(object):
     def h_camera_imu_notheta(self, x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
         if return_measurement_names:
             return ['optic_flow', 'theta_dot', 'accel_x', 'accel_z']
+
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
 
         # Extract state variables
         theta = x_vec[0]
@@ -234,6 +246,9 @@ class H(object):
         if return_measurement_names:
             return ['optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z']
 
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
+
         # Extract state variables
         theta = x_vec[0]
         theta_dot = x_vec[1]
@@ -252,7 +267,7 @@ class H(object):
         j2 = u_vec[1]
 
         # Model for acceleration -- these come from the model
-        accel_x = -k*L/Iyy*j1 - k*np.sin(theta)*j2 / m
+        accel_x = -1*L/Iyy*j1 - np.sin(theta)*j2 / m
         accel_z = -g + k*np.cos(theta)*j2 / m
 
         # Measurements
@@ -264,6 +279,9 @@ class H(object):
     def h_camera_imu_k(self, x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
         if return_measurement_names:
             return ['optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z', 'k']
+
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
 
         # Extract state variables
         theta = x_vec[0]
@@ -295,6 +313,9 @@ class H(object):
     def h_all(self, x_vec, u_vec, g=g, m=m, L=L, return_measurement_names=False):
         if return_measurement_names:
             return ['x', 'z', 'optic_flow', 'theta', 'theta_dot', 'accel_x', 'accel_z', 'k']
+
+        x_vec = np.ravel(x_vec)
+        u_vec = np.ravel(u_vec)
 
         # Extract state variables
         theta = x_vec[0]
