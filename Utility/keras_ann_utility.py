@@ -235,6 +235,9 @@ def load_model_complete(filepath):
     with open(config_path, 'r') as f:
         config = json.load(f)
     print(f"✓ Loaded configuration from: {config_path}")
+
+    input_architecture = config['input_architecture']
+    core_architecture = config['core_architecture']
     
     # Rebuild model with same architecture
     model = build_model(input_architecture, core_architecture)
