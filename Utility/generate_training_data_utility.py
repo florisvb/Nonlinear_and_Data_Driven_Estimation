@@ -4,20 +4,31 @@ import requests
 import pandas as pd
 
 def download_data(filename, giturl=None, unzip=True):
-    # Import functions directly from github
-    # Important: note that we use raw.githubusercontent.com, not github.com
-
     if giturl is None:
-      giturl = 'https://raw.githubusercontent.com/florisvb/Nonlinear_and_Data_Driven_Estimation/main/Data/' + filename
+        giturl = 'https://raw.githubusercontent.com/florisvb/Nonlinear_and_Data_Driven_Estimation/main/Data/' + filename
+    
+    print(f'Fetching from: {giturl}')
     
     r = requests.get(giturl)
-    print('Fetching from: ')
-    print(r)
     
-    # Store the file to the colab working directory
-    with open(filename, 'wb') as f:
-      f.write(r.content)
-    f.close()
+    # Check if download was successful
+    if r.status_code == 200:
+        print(f'Successfully downloaded {filename} ({len(r.content)} bytes)')
+        
+        # Determine if it's text or binary content
+        if filename.endswith('.json') or filename.endswith('.txt'):
+            # Write as text for JSON files
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(r.text)
+        else:
+            # Write as binary for other files
+            with open(filename, 'wb') as f:
+                f.write(r.content)
+    else:
+        print(f'ERROR: Failed to download {filename}')
+        print(f'Status code: {r.status_code}')
+        print(f'Response: {r.text[:200]}...')  # Show first 200 chars of error
+        raise Exception(f"Failed to download {filename} from {giturl}")
     
     if unzip:
         print('unzipping...')
