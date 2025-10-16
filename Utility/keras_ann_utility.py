@@ -237,7 +237,7 @@ def load_model_complete(filepath):
     print(f"✓ Loaded configuration from: {config_path}")
     
     # Rebuild model with same architecture
-    model, dropout_layer = build_model(input_architecture, core_architecture)
+    model = build_model(input_architecture, core_architecture)
     
     # Load weights
     weights_path = f"{filepath}_weights.h5"
