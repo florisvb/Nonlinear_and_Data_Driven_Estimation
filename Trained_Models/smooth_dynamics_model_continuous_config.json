@@ -1,0 +1,35 @@
+{
+  "core_architecture": [
+    {
+      "units": 64,
+      "activation": "tanh"
+    },
+    {
+      "units": 64,
+      "activation": "tanh"
+    }
+  ],
+  "aux_architecture": [
+    {
+      "units": 64,
+      "activation": "tanh"
+    }
+  ],
+  "combined_architecture": [
+    {
+      "units": 32,
+      "activation": "linear"
+    },
+    {
+      "units": 6
+    }
+  ],
+  "input_architecture": {
+    "core_input_dim": 8,
+    "aux_input_dim": 8
+  },
+  "training_parameters": {
+    "jacobian_weight": 1.0,
+    "sv_weight": 0.01
+  }
+}
