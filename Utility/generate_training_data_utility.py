@@ -2,6 +2,7 @@ import zipfile
 import os
 import requests
 import pandas as pd
+import scipy.stats
 
 def download_data(filename, giturl=None, unzip=True):
     if giturl is None:
@@ -68,3 +69,15 @@ def clean_trajectory_data(traj_list, max_state_value=100):
     print(len(traj_list_good))
 
     return traj_list_good
+
+def add_noise_to_trajectory_data(traj_list, noise_std):
+    exclude_columns = exclude_columns = ['time', 'objid'] # don't add noise to time or the objid!
+    noise_distribution = scipy.stats.norm(0, noise_std)
+    
+    for i, trajec in enumerate(traj_list):
+        for col in trajec.keys():
+            if col not in exclude_columns:
+                trajec[col] += noise_distribution.rvs(trajec.shape[0])
+                traj_list[i] = trajec
+
+    return traj_list
