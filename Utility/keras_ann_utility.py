@@ -159,3 +159,91 @@ def create_fast_inference_model(trained_model):
     print("  Note: Inputs must be TensorFlow tensors (use tf.constant())")
     
     return fast_predict
+
+def build_model(input_architecture, core_architecture):
+    model = Sequential() # sequential model means that each layer has one set of inputs & one set of outputs (no recurrence)
+    n_input = input_architecture[0]['core_input_dim']
+
+    for i, layer in enumerate(core_architecture):
+        if i == 0:
+            model.add(Dense(layer['units'], 
+                            input_dim=n_input, 
+                            activation=layer['activation'])) # add a dense layer with 50 neurons & rectified linear unit (ReLU) activation function
+        else:
+            model.add(Dense(layer['units'], 
+                            activation=layer['activation']))
+    return model
+
+def save_model_complete(model, filepath, input_architecture, core_architecture):
+    """
+    Save model weights and complete configuration for easy reloading.
+    
+    Parameters:
+    -----------
+    model : keras.Model
+        Trained model to save
+    filepath : str
+        Base filepath (without extension), e.g., 'my_model'
+    input_architecture : dict
+        Dict with 'core_input_dim'
+    core_architecture : list of dict
+        Core branch architecture specification
+    
+    """
+    import json
+    
+    # Save weights
+    weights_path = f"{filepath}_weights.h5"
+    model.save_weights(weights_path)
+    print(f"✓ Saved weights to: {weights_path}")
+    
+    # Save complete configuration
+    config = {
+        'input_architecture': input_architecture,
+        'core_architecture': core_architecture,
+    }
+    
+    config_path = f"{filepath}_config.json"
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=2)
+    print(f"✓ Saved configuration to: {config_path}")
+    
+    print(f"\nModel saved successfully!")
+    print(f"To load: model = load_model_complete('{filepath}')")
+
+def load_model_complete(filepath):
+    """
+    Load model weights and configuration.
+    
+    Parameters:
+    -----------
+    filepath : str
+        Base filepath (without extension), same as used in save_model_complete
+    
+    Returns:
+    --------
+    model : keras.Model
+        Loaded model ready for inference, to continue training need to compile
+    config : dict
+        Complete configuration dictionary
+    
+    """
+    import json
+    
+    # Load configuration
+    config_path = f"{filepath}_config.json"
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    print(f"✓ Loaded configuration from: {config_path}")
+    
+    # Rebuild model with same architecture
+    model, dropout_layer = build_model(input_architecture, core_architecture)
+    
+    # Load weights
+    weights_path = f"{filepath}_weights.h5"
+    model.load_weights(weights_path)
+    print(f"✓ Loaded weights from: {weights_path}")
+    
+    print(f"\nModel loaded successfully!")
+    
+    return model, config
