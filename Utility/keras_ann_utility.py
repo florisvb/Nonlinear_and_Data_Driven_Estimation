@@ -161,16 +161,16 @@ def create_fast_inference_model(trained_model):
     return fast_predict
 
 def build_model(input_architecture, core_architecture):
-    model = Sequential() # sequential model means that each layer has one set of inputs & one set of outputs (no recurrence)
+    model = keras.models.Sequential() # sequential model means that each layer has one set of inputs & one set of outputs (no recurrence)
     n_input = input_architecture[0]['core_input_dim']
 
     for i, layer in enumerate(core_architecture):
         if i == 0:
-            model.add(Dense(layer['units'], 
+            model.add(keras.layers.Dense(layer['units'], 
                             input_dim=n_input, 
                             activation=layer['activation'])) # add a dense layer with 50 neurons & rectified linear unit (ReLU) activation function
         else:
-            model.add(Dense(layer['units'], 
+            model.add(keras.layers.Dense(layer['units'], 
                             activation=layer['activation']))
     return model
 
