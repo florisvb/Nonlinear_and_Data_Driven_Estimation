@@ -7,15 +7,15 @@
   "core_architecture": [
     {
       "units": 50,
-      "activation": "relu"
+      "activation": "tanh"
     },
     {
       "units": 50,
-      "activation": "relu"
+      "activation": "tanh"
     },
     {
       "units": 20,
-      "activation": "relu"
+      "activation": "tanh"
     },
     {
       "units": 1,
