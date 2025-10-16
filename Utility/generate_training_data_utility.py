@@ -7,6 +7,9 @@ def download_data(filename, giturl=None, unzip=True):
     if giturl is None:
         giturl = 'https://raw.githubusercontent.com/florisvb/Nonlinear_and_Data_Driven_Estimation/main/Data/' + filename
     
+    else:
+        giturl += filename 
+
     print(f'Fetching from: {giturl}')
     
     r = requests.get(giturl)
