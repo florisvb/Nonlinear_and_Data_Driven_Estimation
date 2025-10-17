@@ -26,7 +26,7 @@ def build_lambda_funcs(feature_names, symbols):
     return lambda_funcs 
 
 # When saving: mostly written by Claude
-def save_lambdas_portable(lambda_funcs, coefficients, filename):
+def save_sindy_portable(lambda_funcs, coefficients, filename):
     func_strings = []
     for i, func in enumerate(lambda_funcs):
         try:
@@ -45,7 +45,7 @@ def save_lambdas_portable(lambda_funcs, coefficients, filename):
         json.dump(data, f, indent=2)
 
 # When loading: mostly written by Claude
-def load_lambdas_portable(filename):
+def load_sindy_portable(filename):
     with open(filename, 'r') as f:
         data = json.load(f)
     
@@ -104,7 +104,7 @@ class SINDY_INFERENCE_MODEL:
             cols = np.hstack([np.ravel(x), np.ravel(u)])
         else:
             cols = np.ravel(x)
-            
+
         results = np.array([func(*cols) for func in self.lambda_funcs])
         v = self.coefficients@np.atleast_2d(results).T
         return v
