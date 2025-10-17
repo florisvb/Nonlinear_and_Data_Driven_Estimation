@@ -99,8 +99,12 @@ class SINDY_INFERENCE_MODEL:
         self.lambda_funcs = lambda_funcs
         self.coefficients = coefficients
 
-    def predict(self, x, u):
-        cols = np.hstack([np.ravel(x), np.ravel(u)])
+    def predict(self, x, u=None):
+        if u is not None:
+            cols = np.hstack([np.ravel(x), np.ravel(u)])
+        else:
+            cols = np.ravel(x)
+            
         results = np.array([func(*cols) for func in self.lambda_funcs])
         v = self.coefficients@np.atleast_2d(results).T
         return v
