@@ -2,7 +2,7 @@ import dill
 import sympy as sp
 
 # capture things like sin = sp.sin
-from symp import *
+from sympy import *
 
     
 def build_lambda_funcs(feature_names, symbols):
