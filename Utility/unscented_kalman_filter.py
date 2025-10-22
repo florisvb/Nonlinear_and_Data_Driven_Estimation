@@ -131,9 +131,9 @@ class UKF:
         if len(P0.shape) > 1:
             P0 = np.diag(P0)
 
-        if R == None:
+        if R is None:
             R = self.R
-        if Q == None:
+        if Q is None:
             Q = self.Q
 
         y = Y
