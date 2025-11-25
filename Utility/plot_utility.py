@@ -24,3 +24,34 @@ def plot_tme(t, true, measured, estimated=None, ax=None, label_var='y', markersi
     ax.legend()
     
     return ax
+
+# From claude
+def find_contiguous_chunks(lst):
+    """
+    Find contiguous chunks in a list of integers.
+
+    Parameters:
+    -----------
+    lst : list of int
+        List of integers
+
+    Returns:
+    --------
+    list of lists : Each sublist contains a contiguous sequence
+    """
+    if not lst:
+        return []
+
+    lst = sorted(lst)
+    chunks = []
+    current_chunk = [lst[0]]
+
+    for i in range(1, len(lst)):
+        if lst[i] == lst[i-1] + 1:
+            current_chunk.append(lst[i])
+        else:
+            chunks.append(current_chunk)
+            current_chunk = [lst[i]]
+
+    chunks.append(current_chunk)
+    return chunks
