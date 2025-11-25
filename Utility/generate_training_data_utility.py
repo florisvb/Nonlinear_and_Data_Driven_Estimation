@@ -3,6 +3,7 @@ import os
 import requests
 import pandas as pd
 import scipy.stats
+import numpy as np
 
 def download_data(filename, giturl=None, unzip=True):
     if giturl is None:
@@ -39,15 +40,17 @@ def download_data(filename, giturl=None, unzip=True):
         with zipfile.ZipFile(filename, 'r') as zip_ref:
           zip_ref.extractall('.')  # extracts to new directory
 
-def load_trajectory_data(data_path):
+def load_trajectory_data(data_path, keyword=''):
     #data_path = 'planar_drone_trajectories'
     all_fnames = os.listdir(data_path)
+    all_fnames = np.sort(all_fnames)
 
     traj_list = []
     for fname in all_fnames:
-        fname = os.path.join(data_path, fname)
-        trajec = pd.read_hdf(fname)
-        traj_list.append(trajec)
+        if keyword in fname:
+            fname = os.path.join(data_path, fname)
+            trajec = pd.read_hdf(fname)
+            traj_list.append(trajec)
 
     print('Number of trajectories: ')
     print(len(traj_list))
