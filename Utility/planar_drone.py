@@ -351,7 +351,7 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
     NA = np.zeros_like(tsim)
 
     if setpoint is None:
-        assert trajectory_shape in ['squiggle', 'alternating', 'random', 'constant_thetadot']
+        assert trajectory_shape in ['squiggle', 'bigsquiggle', 'alternating', 'random', 'constant_thetadot']
 
         if trajectory_shape == 'squiggle':
             setpoint = {'theta': NA,
@@ -359,6 +359,15 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
                         'x': 2.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
                         'x_dot': NA,
                         'z': 0.3*np.sin(2*np.pi*tsim*0.2)+0.5, # altitude also oscillates
+                        'z_dot': NA,
+                        'k': np.ones_like(tsim),
+                       }
+        elif trajectory_shape == 'bigsquiggle':
+            setpoint = {'theta': NA,
+                        'theta_dot': NA,
+                        'x': 5.0*np.cos(2*np.pi*tsim*0.3),  # ground speed changes as a sinusoid
+                        'x_dot': NA,
+                        'z': 5*np.sin(2*np.pi*tsim*0.2)+6, # altitude also oscillates
                         'z_dot': NA,
                         'k': np.ones_like(tsim),
                        }
@@ -450,7 +459,7 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
     simulator.update_dict(setpoint, name='setpoint')
 
     # Define MPC cost function: penalize the squared error between the setpoint for g and the true g
-    if trajectory_shape in ['squiggle', 'alternating', 'random']:
+    if trajectory_shape in ['squiggle', 'bigsquiggle', 'alternating', 'random']:
         cost_x = (simulator.model.x['x'] - simulator.model.tvp['x_set']) ** 2
         cost_z = (simulator.model.x['z'] - simulator.model.tvp['z_set']) ** 2
         cost = cost_x + cost_z 
