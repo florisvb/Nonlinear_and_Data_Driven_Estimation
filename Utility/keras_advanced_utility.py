@@ -616,7 +616,7 @@ def build_auxiliary_dropout_model(
     
     # Auxiliary branch (with dropout)
     dropout_layer = layers.Dropout(initial_dropout, name=dropout_layer_name)
-    aux_branch = dropout_layer(aux_input, training=True)
+    aux_branch = dropout_layer(aux_input) #, training=True)
     for layer_spec in aux_architecture:
         aux_branch = layers.Dense(**layer_spec)(aux_branch)
     
