@@ -177,7 +177,7 @@ def install_package(package_name, required_version=None):
             print(f"Successfully installed {package_name}")
 
             if required_version is not None:
-                success = verify_package(package_name, version_requirement)
+                success = verify_package(package_name, required_version)
                 if not success:
                     raise ValueError('Wrong package version')
 
