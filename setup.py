@@ -1,7 +1,16 @@
 from setuptools import setup, find_packages
+import os
+
+# Read version from __init__.py
+def get_version():
+    init_path = os.path.join(os.path.dirname(__file__), 'Utility', '__init__.py')
+    with open(init_path) as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return line.split('=')[1].strip().strip('"').strip("'")
+    return "0.0.0"
 
 def read_requirements():
-    """Read requirements from requirements.txt, ignoring comments and blank lines."""
     with open("requirements_minimal.txt") as f:
         return [
             line.strip() 
@@ -11,7 +20,7 @@ def read_requirements():
 
 setup(
     name="nonlinear-data-driven-estimation",
-    version="0.0.1",
+    version=get_version(),  # Automatically read from __init__.py
     packages=["nonlinear_estimation_utilities"],
     package_dir={"nonlinear_estimation_utilities": "Utility"},
     include_package_data=True,
