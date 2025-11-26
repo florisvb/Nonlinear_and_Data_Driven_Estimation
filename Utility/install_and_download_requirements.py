@@ -137,8 +137,8 @@ def import_local_or_github(package_name, function_name=None, directory=None, git
             return package
 
 def install_requirements(requirements_file):
-    req_raw = load_requirements(requirements_file):
-    req_parsed = parse_requirements(req_raw):
+    req_raw = load_requirements(requirements_file)
+    req_parsed = parse_requirements(req_raw)
     for req in req_parsed:
         install_package(req[0], req[1])
 
