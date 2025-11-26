@@ -17,7 +17,7 @@ Topics covered:
 
 Topics covered:
   * Loading a `pandas` dataframe
-  * Demo of building an animation using LLM coding 
+  * Demo of building a `matplotlib` animation using LLM coding 
 
 # Pre-requisites
 
@@ -28,4 +28,4 @@ This lesson assumes working knowledge in the following topics:
 
 # Reusable Utility Functions 
 
-This notebook introduces the dynamics functions `f(x,u)` and `h(x,u)` introduced in this notebook and the model predictive control framework form the basis of utility functions in `Utility/planar_drone.py` that used throughout the course. 
+This notebook introduces the dynamics functions `f(x,u)` and `h(x,u)` introduced in this notebook and the model predictive control framework form the basis of utility functions in `../Utility/planar_drone.py` that used throughout the course. 
