@@ -84,6 +84,11 @@ def check_version_requirement(installed_version, requirement):
     
     # Clean up installed version
     installed_version = str(installed_version).strip()
+
+    # make robust to dev version
+    installed_version = installed_version.split('.dev')[0]
+
+    # clean up requirement version
     requirement = str(requirement).strip()
     
     try:
