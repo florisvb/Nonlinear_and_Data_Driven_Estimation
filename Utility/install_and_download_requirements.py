@@ -160,9 +160,14 @@ def install_package(package_name, required_version=None):
     Returns:
         bool: True if installation was successful, False otherwise
     """
+    package_base_name = package_name.split('[')[0]
+
     try:
         importlib.import_module(package_name)
-        success = check_package_version(package_name, required_version=required_version)
+        if required_version is not None:
+            success = verify_package(package_base_name, required_version)
+            if not success:
+                    raise ValueError('Wrong package version')
 
     except:
         print(f"Attempting to pip install: " + package_name)
@@ -177,7 +182,7 @@ def install_package(package_name, required_version=None):
             print(f"Successfully installed {package_name}")
 
             if required_version is not None:
-                success = verify_package(package_name, required_version)
+                success = verify_package(package_base_name, required_version)
                 if not success:
                     raise ValueError('Wrong package version')
 
