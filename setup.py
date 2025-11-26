@@ -12,7 +12,8 @@ def read_requirements():
 setup(
     name="nonlinear-data-driven-estimation",
     version="0.0.1",
-    packages=find_packages(),
+    packages=["nonlinear_estimation_utilities"],
+    package_dir={"nonlinear_estimation_utilities": "Utility"},
     install_requires=read_requirements(),
     python_requires=">=3.7",
     description="Utilities for nonlinear and data-driven estimation",
