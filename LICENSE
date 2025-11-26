@@ -26,7 +26,7 @@ Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ## Code License
 
-Python code, utility functions, and software implementations in this repository are dual-licensed:
+Python code (including jupyter notebooks), utility functions, and software implementations in this repository are dual-licensed:
 
 1. **For non-commercial use:** CC BY-NC-SA 4.0 (same as above)
 2. **For commercial use:** Contact the copyright holder for a commercial license
@@ -60,4 +60,4 @@ https://github.com/florisvb/Nonlinear_and_Data_Driven_Estimation
 For licensing questions or commercial use inquiries, please open an issue or contact:
 Floris van Breugel
 University of Nevada, Reno
-[your contact information]
+fvanbreugel@unr.edu
