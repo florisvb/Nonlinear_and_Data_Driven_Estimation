@@ -36,6 +36,11 @@ def parse_requirements(requirements_text):
         # Remove inline comments
         if '#' in line:
             line = line.split('#')[0].strip()
+
+        # handle git+ installs 
+        if 'git+' in line:
+            parsed.append([line, None])
+            return parsed
         
         # Match package name (with optional extras) and version specifier
         # Pattern: package_name[extras]version_spec
@@ -160,7 +165,10 @@ def install_package(package_name, required_version=None):
     Returns:
         bool: True if installation was successful, False otherwise
     """
-    package_base_name = package_name.split('[')[0]
+    if 'git+' in package_name:
+        package_base_name = package_name.split('/')[-1]
+    else:
+        package_base_name = package_name.split('[')[0]
 
     try:
         importlib.import_module(package_name)
