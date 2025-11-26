@@ -16,7 +16,7 @@ setup(
     package_dir={"nonlinear_estimation_utilities": "Utility"},
     include_package_data=True,
     package_data={
-        'Utility': ['Requirements/*.txt', 'Requirements/*'],
+        'nonlinear_estimation_utilities': ['Requirements/*.txt', 'Requirements/*'],
     },
     install_requires=read_requirements(),
     python_requires=">=3.7",
