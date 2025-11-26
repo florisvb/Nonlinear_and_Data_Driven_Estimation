@@ -1,0 +1,2 @@
+pynumdiff>=0.2.0
+pysindy[miosr]>=2.0.0
