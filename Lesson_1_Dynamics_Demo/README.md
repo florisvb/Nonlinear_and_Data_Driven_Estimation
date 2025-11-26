@@ -9,10 +9,12 @@ This lesson introduces the planar drone dynamics example used throughout the cou
 Derivation of the planar drone dynamics. 
 
 **Key terms introduced**:
-  * States: variables that describe the current state of the system and determine its evolution. States are only assumed to be known if there are measurements of them available. 
-    * Dynamic states: states of the dynamical system that vary in time
-    * Static states: states of the dynamical system that do NOT vary in time
-  * Parameters: constant values that are assumed to be known (and therefore will not need to be estimated)
+  * **States**: variables that describe the current state of the system and determine its evolution. States are only assumed to be known if there are measurements of them available. 
+    * **Dynamic states**: states of the dynamical system that vary in time
+    * **Static states**: states of the dynamical system that do NOT vary in time
+  * **Controls**: known inputs to the system that together with the states determine its evolution. 
+  * **Parameters**: constant values that are assumed to be known (and therefore will not need to be estimated)
+ 
 
 ## Notebook A
 
