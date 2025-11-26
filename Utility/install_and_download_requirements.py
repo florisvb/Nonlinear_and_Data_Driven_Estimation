@@ -6,8 +6,16 @@ from importlib import resources
 import re
 
 def load_requirements(requirements_file='requirements_pybounds.txt'):
-    # Using __package__ to reference the current package
-    return resources.files(f'{__package__}.Requirements').joinpath(requirements_file).read_text()
+    """Load requirements file (Python 3.7+ compatible)."""
+    try:
+        # Try Python 3.9+ API
+        from importlib import resources
+        return resources.files(f'{__package__}.Requirements').joinpath(requirements_file).read_text()
+    except AttributeError:
+        # Fallback to Python 3.7-3.8 API
+        import importlib.resources as pkg_resources
+        import nonlinear_estimation_utilities.Requirements as req_pkg
+        return pkg_resources.read_text(req_pkg, requirements_file)
 
 def parse_requirements(requirements_text):
     """
