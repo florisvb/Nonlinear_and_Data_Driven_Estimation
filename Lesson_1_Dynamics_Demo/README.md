@@ -4,10 +4,15 @@ This lesson introduces the planar drone dynamics example used throughout the cou
 
 ![animated drone trajectory](drone_animation.gif)
 
+## Notes
+
+Derivation of the planar drone dynamics. 
+
 ## Notebook A
 
 Topics covered:
   * Introduction of continuous dynamics functions of the form $\mathbf{\dot{x}}=\mathbf{f}(\mathbf{x},\mathbf{u})$
+  * Using latex (in jupyter cells) to display dynamics with colored highlighting
   * Integrating dynamics with `odeint`
   * Designing a trajectory and using model predictive control to determine the control inputs needed to follow it
     * We use a `pybounds` wrapper for functionality provided by `casadi` and `do_mpc`
