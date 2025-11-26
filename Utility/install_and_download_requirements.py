@@ -179,11 +179,12 @@ def install_package(package_name, required_version=None):
         package_base_name = package_name.split('[')[0]
 
     try:
-        importlib.import_module(package_name)
+        importlib.import_module(package_base_name)
         if required_version is not None:
             success = verify_package(package_base_name, required_version)
             if not success:
-                    raise ValueError('Wrong package version')
+                raise ValueError('Wrong package version')
+        print(f"Already installed: " + package_name)
 
     except:
         print(f"Attempting to pip install: " + package_name)
