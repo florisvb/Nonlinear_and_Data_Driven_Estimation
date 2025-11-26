@@ -2,6 +2,57 @@ import subprocess
 import sys
 import importlib
 from packaging.version import Version
+from importlib import resources
+import re
+
+def load_requirements(requirements_file='requirements_pybounds.txt'):
+    # Using __package__ to reference the current package
+    return resources.files(f'{__package__}.Requirements').joinpath(requirements_file).read_text()
+
+def parse_requirements(requirements_text):
+    """
+    Parse requirements text into a list of [package_name, version_requirement].
+    
+    Handles extras like package[extra] or package[extra1,extra2].
+    
+    Args:
+        requirements_text (str): Content of a requirements.txt file
+        
+    Returns:
+        list: List of [package_name, version_requirement] pairs.
+              version_requirement is None if not specified.
+              Package name includes extras in brackets if present.
+    """
+    parsed = []
+    
+    for line in requirements_text.strip().split('\n'):
+        # Remove whitespace
+        line = line.strip()
+        
+        # Skip empty lines and comments
+        if not line or line.startswith('#'):
+            continue
+        
+        # Remove inline comments
+        if '#' in line:
+            line = line.split('#')[0].strip()
+        
+        # Match package name (with optional extras) and version specifier
+        # Pattern: package_name[extras]version_spec
+        # Examples: numpy, pandas[excel], scipy>=1.0, requests[security]>=2.0
+        match = re.match(r'^([a-zA-Z0-9_-]+(?:\[[a-zA-Z0-9_,-]+\])?)(.*?)$', line)
+        
+        if match:
+            package_name = match.group(1)
+            version_spec = match.group(2).strip()
+            
+            # If no version specified, set to None
+            if not version_spec:
+                version_spec = None
+            
+            parsed.append([package_name, version_spec])
+    
+    return parsed
 
 def check_package_version(package_name, required_version=None):
     imported_package = importlib.import_module(package_name)
@@ -85,14 +136,17 @@ def import_local_or_github(package_name, function_name=None, directory=None, git
         else:
             return package
 
-def install_basic_requirements():
-    install_package('pynumdiff')
+def install_requirements(requirements_file):
+    req_raw = load_requirements(requirements_file):
+    req_parsed = parse_requirements(req_raw):
+    for req in req_parsed:
+        install_package(req[0], req[1])
 
 def install_pybounds_requirements():
-    install_package(casadi)
+    install_requirements(requirements_file='requirements_pybounds.txt')
 
 def install_data_driven_requirements():
-    install_package('pysindy[miosr]')
+    install_requirements(requirements_file='requirements_datadriven.txt')
 
 def install_neural_network_requirements():
-    pass
+    install_requirements(requirements_file='requirements_neuralnetworks.txt')
