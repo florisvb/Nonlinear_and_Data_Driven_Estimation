@@ -1,0 +1,63 @@
+# License
+
+Copyright (c) 2025 Floris van Breugel, University of Nevada, Reno
+
+## Course Materials License
+
+All course materials in this repository, including but not limited to:
+- Jupyter notebooks (*.ipynb files)
+- PDF lecture notes and documentation
+- Markdown documentation
+- Images, animations, and visualizations
+- Problem sets and solutions
+
+are licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0)**.
+
+**You are free to:**
+- Share — copy and redistribute the material in any medium or format
+- Adapt — remix, transform, and build upon the material
+
+**Under the following terms:**
+- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+- **NonCommercial** — You may not use the material for commercial purposes without explicit written permission from the copyright holder.
+- **ShareAlike** — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+
+Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+## Code License
+
+Python code (including jupyter notebooks), utility functions, and software implementations in this repository are dual-licensed:
+
+1. **For non-commercial use:** CC BY-NC-SA 4.0 (same as above)
+2. **For commercial use:** Contact the copyright holder for a commercial license
+
+## Commercial Use
+
+If you wish to use any materials from this repository for commercial purposes, including but not limited to:
+- Incorporation into commercial training programs
+- Use in for-profit educational institutions
+- Commercial software products
+- Consulting services
+
+Please contact Floris van Breugel for licensing arrangements.
+
+## Book Rights
+
+The copyright holder explicitly reserves all rights to publish this material, or derivative works based on this material, in book form (physical or digital). This license does not grant any rights to publish compilations of this work as a book without explicit written permission.
+
+## Attribution
+
+When using or citing this work, please include:
+
+```
+Floris van Breugel (2025). Nonlinear and Data Driven Estimation.
+University of Nevada, Reno.
+https://github.com/florisvb/Nonlinear_and_Data_Driven_Estimation
+```
+
+## Questions
+
+For licensing questions or commercial use inquiries, please open an issue or contact:
+Floris van Breugel
+University of Nevada, Reno
+fvanbreugel@unr.edu
