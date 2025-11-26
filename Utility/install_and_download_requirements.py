@@ -54,14 +54,99 @@ def parse_requirements(requirements_text):
     
     return parsed
 
-def check_package_version(package_name, required_version=None):
-    imported_package = importlib.import_module(package_name)
-    if Version(imported_package.__version__) < Version(required_version):
-        raise ValueError(package_name + " version is: " + imported_package.__version__ + "This notebook requires version " + required_version + " or greater.")
-        return False
-    else:
-        print(package_name + " version is: " + imported_package.__version__)
+def check_version_requirement(installed_version, requirement):
+    """
+    Check if an installed version meets a requirement.
+    Handles complex requirements like '>=1.0,<2.0'.
+    
+    Args:
+        installed_version (str): The installed version (e.g., '1.2.3')
+        requirement (str): Version requirement (e.g., '>=1.0,<2.0')
+        
+    Returns:
+        bool: True if requirement is met, False otherwise
+    """
+    if requirement is None:
         return True
+    
+    # Clean up installed version
+    installed_version = str(installed_version).strip()
+    requirement = str(requirement).strip()
+    
+    try:
+        installed = Version(installed_version)
+    except Exception as e:
+        print(f"Error parsing installed version '{installed_version}': {e}")
+        return False
+    
+    # Split by comma for compound requirements
+    conditions = [c.strip() for c in requirement.split(',')]
+    
+    for condition in conditions:
+        # Parse each condition
+        match = re.match(r'^(==|>=|<=|>|<|!=)?(.+)$', condition)
+        
+        if not match:
+            return False
+        
+        operator = match.group(1)
+        required_version = match.group(2).strip()
+        
+        # If no operator, assume '=='
+        if operator is None:
+            operator = '=='
+        
+        try:
+            required = Version(required_version)
+        except Exception as e:
+            print(f"Error parsing required version '{required_version}': {e}")
+            return False
+        
+        # Check condition
+        result = False
+        if operator == '==':
+            result = (installed == required)
+        elif operator == '>=':
+            result = (installed >= required)
+        elif operator == '<=':
+            result = (installed <= required)
+        elif operator == '>':
+            result = (installed > required)
+        elif operator == '<':
+            result = (installed < required)
+        elif operator == '!=':
+            result = (installed != required)
+        
+        if not result:
+            return False
+    
+    # All conditions passed
+    return True
+
+def verify_package(package_name, version_requirement):
+    """Check if a package meets version requirements."""
+    try:
+        # Import the package
+        pkg = importlib.import_module(package_name)
+        
+        # Get installed version
+        installed_version = str(pkg.__version__)
+
+        # Check requirement
+        meets_requirement = check_version_requirement(installed_version, version_requirement)
+        
+        if meets_requirement:
+            print(f"✓ {package_name} {installed_version} meets requirement {version_requirement}")
+        else:
+            print(f"✗ {package_name} {installed_version} does NOT meet requirement {version_requirement}")
+        
+        return meets_requirement
+    except ImportError:
+        print(f"✗ {package_name} is not installed")
+        return False
+    except AttributeError:
+        print(f"⚠ {package_name} has no __version__ attribute")
+        return None
 
 # From Claude, with my edits
 def install_package(package_name, required_version=None):
@@ -92,7 +177,9 @@ def install_package(package_name, required_version=None):
             print(f"Successfully installed {package_name}")
 
             if required_version is not None:
-                success = check_package_version(package_name, required_version=required_version)
+                success = verify_package(package_name, version_requirement)
+                if not success:
+                    raise ValueError('Wrong package version')
 
         except subprocess.CalledProcessError as e:
             print(f"Failed to install {package_name}: {e.stderr}")
