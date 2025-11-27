@@ -30,4 +30,5 @@ Cellini, B., Boyacioglu, B., Lopez, A., & van Breugel, F. (2025). Discovering an
 
 1. Start by including as many "parameters" as "static states". That is, include these variables as a part of the state vector. Then you can explore whether they need to be known or not by including them in the measurement function, or not. 
 2. If the observability of a state variable changes, determine what state values make it change. You can often increase the level of observability by amplifying the magnitude of these active sensing motifs.
-3. Do not include any stochasticity in your measurement (or dynamics) functions. Stochastic dynamics will artificially increase the level of observability. The simulation paradigm you use needs to be deterministic, smooth, and sensitive to small perturbations. 
+3. Do not include any stochasticity in your measurement (or dynamics) functions. Stochastic dynamics will artificially increase the level of observability. The simulation paradigm you use needs to be deterministic, smooth, and sensitive to small perturbations.
+4. Beware: using a large time window can lead to long computation times. Debug your systems observability by setting the time window to None, which will provide a single observability matrix. 
