@@ -24,4 +24,4 @@ Wan, E. A., & van der Merwe, R. (2000). The unscented Kalman filter for nonlinea
      * Increase $Q$ to speed up the filter
      * Increase $P_0$ to speed up the filter initially
 3. If your UKF only works well when you give it an accurate initial guess, try the AI-UKF (Lesson 13).
-4. If the 3$\sigma$ bounds is very small, even for states that have moderate levels of observability, then your Q is probably too small, try making it bigger.  
+4. If the $3\sigma$ bounds is very small, even for states that have moderate levels of observability, then your Q is probably too small, try making it bigger.  
