@@ -18,8 +18,8 @@ Wan, E. A., & van der Merwe, R. (2000). The unscented Kalman filter for nonlinea
 2. To tune your UKF use a trajectory that has high levels of observability for the states you are most interested in and then progressively make the UKF work harder.
    * Start by setting the following parameters:
      * Set $x_0$ to be very close to the correct initial condition
-     * Set $P_0$ to be quite small, e.g. $10^-4$
-     * Set $Q$ to be quite small, e.g. $10^-8$
+     * Set $P_0$ to be quite small, e.g. $10^{-4}$
+     * Set $Q$ to be quite small, e.g. $10^{-8}$
    * Next gradually make the initial condition less correct, this is a more realistic and fair test
      * Increase $Q$ to speed up the filter
      * Increase $P_0$ to speed up the filter initially
