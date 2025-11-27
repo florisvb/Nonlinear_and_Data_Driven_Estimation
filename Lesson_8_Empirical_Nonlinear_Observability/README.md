@@ -4,7 +4,7 @@ This lesson covers methods for calculating the empirical observability of a dyna
 
 ## Key Concepts
 
-* Use perturbation approach to numerically determine the observability matrix as the Jacobian of the measurements with respect to the states: $ \mathcal{O} = \frac{\delta Y}{\delta X}$
+* Use perturbation approach to numerically determine the observability matrix as the Jacobian of the measurements with respect to the states: $\mathcal{O} = \frac{\delta Y}{\delta X}$
 * Find the Fisher information matrix assuming $Q=0$ as $\mathcal{F}=\mathcal{O}^T \mathcal{R} \mathcal{O}$
 * Find a regularized inverse of $\mathcal{F}$: $\tilde{\mathcal{F}}^{-1}=[\mathcal{F}+\lambda I]^{-1}$
 * The diagonal of $\tilde{\mathcal{F}}^{-1}$ describes the minimum error variance attainable by any unbiased estimator via the Cramer Rao Bound
