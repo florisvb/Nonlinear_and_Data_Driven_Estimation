@@ -1,3 +1,4 @@
 casadi
 do_mpc
 git+https://github.com/vanbreugel-lab/pybounds
+pynumdiff
