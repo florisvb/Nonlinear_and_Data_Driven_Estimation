@@ -6,6 +6,8 @@ import scipy.optimize
 
 from scipy import interpolate
 
+import pandas as pd
+
 import pybounds
 
 ############################################################################################
