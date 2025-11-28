@@ -487,6 +487,22 @@ def simulate_drone(f, h, tsim_length=20, dt=0.1, measurement_names=None,
     # Return
     return t_sim, x_sim, u_sim, y_sim, simulator
 
+def package_data_as_pandas_dataframe(t_sim, x_sim, u_sim, y_sim):
+    # turn all the sim outputs into pandas dataframes
+    df_x = pd.DataFrame(x_sim) # x_sim is a dict
+    df_u = pd.DataFrame(u_sim) # u_sim is a dict
+    df_y = pd.DataFrame(y_sim) # y_sim is a dict
+    df_t = pd.DataFrame({'t': t_sim}) # t_sim is a 1d array, make it a dict
+    
+    # rename the columns for y so that they do not conflict with state names
+    new_names = {key: 'sensor_' + key for key in df_y}
+    df_y = df_y.rename(columns=new_names)
+    
+    # merge into a single data frame for the entire trajectory
+    df_trajec = pd.concat([df_t, df_x, df_u, df_y], axis=1)
+
+    return df_trajec
+    
 ###############################################################################################
 # Misc helper functions
 ###############################################################################################
