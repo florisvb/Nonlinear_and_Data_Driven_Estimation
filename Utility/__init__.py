@@ -1,16 +1,18 @@
 __version__ = "0.0.32"
 
 from . import install_and_download_requirements
-from . import planar_drone
-from . import plot_utility
 
-from . import pysindy_utility
-from . import symbolic_derivatives
-from . import terrain_and_optic_flow_utility
-from . import keras_ann_utility
-from . import keras_advanced_utility
-from . import extended_kalman_filter
-from . import unscented_kalman_filter
+def load_modules():
+    from . import planar_drone
+    from . import plot_utility
+    
+    from . import pysindy_utility
+    from . import symbolic_derivatives
+    from . import terrain_and_optic_flow_utility
+    from . import keras_ann_utility
+    from . import keras_advanced_utility
+    from . import extended_kalman_filter
+    from . import unscented_kalman_filter
 
 def check_for_updates(silent=False):
     """Check if a newer version is available on GitHub."""
