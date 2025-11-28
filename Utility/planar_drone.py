@@ -494,7 +494,7 @@ def package_data_as_pandas_dataframe(t_sim, x_sim, u_sim, y_sim):
     df_x = pd.DataFrame(x_sim) # x_sim is a dict
     df_u = pd.DataFrame(u_sim) # u_sim is a dict
     df_y = pd.DataFrame(y_sim) # y_sim is a dict
-    df_t = pd.DataFrame({'t': t_sim}) # t_sim is a 1d array, make it a dict
+    df_t = pd.DataFrame({'time': t_sim}) # t_sim is a 1d array, make it a dict
     
     # rename the columns for y so that they do not conflict with state names
     new_names = {key: 'sensor_' + key for key in df_y}
