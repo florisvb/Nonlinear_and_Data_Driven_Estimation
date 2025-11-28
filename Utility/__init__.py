@@ -17,7 +17,7 @@ def load_datadriven_modules():
     from . import pysindy_utility
     from . import symbolic_derivatives
 
-def load_neuralnetwork_modules()
+def load_neuralnetwork_modules():
     from . import keras_ann_utility
     from . import keras_advanced_utility
 
