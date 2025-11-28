@@ -256,7 +256,7 @@ def install_requirements(requirements_file):
     for req in req_parsed:
         install_package(req[0], req[1])
 
-def install_pybounds_requirements():
+def install_planar_drone_requirements():
     install_requirements(requirements_file='requirements_pybounds.txt')
 
 def install_data_driven_requirements():
