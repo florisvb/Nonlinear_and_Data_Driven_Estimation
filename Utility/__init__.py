@@ -5,7 +5,7 @@ from . import planar_drone
 from . import plot_utility
 
 from . import pysindy_utility
-from . import symbolic derivatives
+from . import symbolic_derivatives
 from . import terrain_and_optic_flow_utility
 from . import keras_ann_utility
 from . import keras_advanced_utility
