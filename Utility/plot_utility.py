@@ -25,6 +25,24 @@ def plot_tme(t, true, measured, estimated=None, ax=None, label_var='y', markersi
     
     return ax
 
+def plot_planar_drone(df_trajec, axes=None):
+    if axes is None:
+        fig = plt.figure(figsize=(8,4))
+        ax1 = fig.add_subplot(121)
+        ax2 = fig.add_subplot(122)
+    else:
+        ax1, ax2 = axes
+        
+    ax1.plot(df_trajec.time.values, df_trajec.theta.values)
+    ax1.set_xlabel('Time, sec')
+    ax1.set_ylabel('theta')
+    
+    ax2.plot(df_trajec.x.values, df_trajec.z.values, '.')
+    ax2.set_xlabel('x pos')
+    ax2.set_ylabel('z pos')
+
+    return ax1, ax2
+
 # From claude
 def find_contiguous_chunks(lst):
     """
