@@ -48,22 +48,22 @@ def parse_requirements(requirements_text):
         # handle git+ installs 
         if 'git+' in line:
             parsed.append([line, None])
-            return parsed
-        
-        # Match package name (with optional extras) and version specifier
-        # Pattern: package_name[extras]version_spec
-        # Examples: numpy, pandas[excel], scipy>=1.0, requests[security]>=2.0
-        match = re.match(r'^([a-zA-Z0-9_-]+(?:\[[a-zA-Z0-9_,-]+\])?)(.*?)$', line)
-        
-        if match:
-            package_name = match.group(1)
-            version_spec = match.group(2).strip()
             
-            # If no version specified, set to None
-            if not version_spec:
-                version_spec = None
+        else:
+            # Match package name (with optional extras) and version specifier
+            # Pattern: package_name[extras]version_spec
+            # Examples: numpy, pandas[excel], scipy>=1.0, requests[security]>=2.0
+            match = re.match(r'^([a-zA-Z0-9_-]+(?:\[[a-zA-Z0-9_,-]+\])?)(.*?)$', line)
             
-            parsed.append([package_name, version_spec])
+            if match:
+                package_name = match.group(1)
+                version_spec = match.group(2).strip()
+                
+                # If no version specified, set to None
+                if not version_spec:
+                    version_spec = None
+                
+                parsed.append([package_name, version_spec])
     
     return parsed
 
