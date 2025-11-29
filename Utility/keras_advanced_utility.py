@@ -229,7 +229,7 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
         'training_parameters': training_parameters
     }
     
-    config_path = f"{filepath}_config.json"
+    config_path = f"{filepath}.config.json"
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=2)
     print(f"✓ Saved configuration to: {config_path}")
@@ -269,7 +269,7 @@ def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
     import json
     
     # Load configuration
-    config_path = f"{filepath}_config.json"
+    config_path = f"{filepath}.config.json"
     with open(config_path, 'r') as f:
         config = json.load(f)
     print(f"✓ Loaded configuration from: {config_path}")
@@ -295,7 +295,7 @@ def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
         print(f"✓ Model compiled with learning_rate={learning_rate}")
     
     # Load weights
-    weights_path = f"{filepath}_weights.h5"
+    weights_path = f"{filepath}.weights.h5"
     model.load_weights(weights_path)
     print(f"✓ Loaded weights from: {weights_path}")
     
