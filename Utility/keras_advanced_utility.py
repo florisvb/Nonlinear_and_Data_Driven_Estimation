@@ -216,7 +216,7 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
     import json
     
     # Save weights
-    weights_path = f"{filepath}_weights.h5"
+    weights_path = f"{filepath}.weights.h5"
     model.save_weights(weights_path)
     print(f"✓ Saved weights to: {weights_path}")
     
