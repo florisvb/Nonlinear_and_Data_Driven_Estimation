@@ -9,6 +9,7 @@ def load_planar_drone_modules():
     from . import planar_drone
     from . import terrain_and_optic_flow_utility
     from . import symbolic_derivatives
+    from . import generate_training_data_utility
 
 def load_kalman_filter_modules():
     from . import extended_kalman_filter
