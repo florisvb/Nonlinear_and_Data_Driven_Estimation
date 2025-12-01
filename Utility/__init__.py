@@ -1,4 +1,4 @@
-__version__ = "0.0.33"
+__version__ = "0.0.34"
 
 from . import install_and_download_requirements
 
