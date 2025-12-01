@@ -215,10 +215,39 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
     """
     import json
     
-    # Save weights
-    weights_path = f"{filepath}.weights.h5"
-    model.save_weights(weights_path)
-    print(f"✓ Saved weights to: {weights_path}")
+    # Save weights - try multiple formats for best compatibility
+    weights_saved = False
+    
+    # First, try the new .keras format (most compatible across versions)
+    try:
+        keras_path = f"{filepath}.weights.keras"
+        model.save_weights(keras_path)
+        print(f"✓ Saved weights to: {keras_path}")
+        weights_saved = True
+    except Exception as e:
+        print(f"  Could not save .keras format: {e}")
+    
+    # Also save as .h5 for backward compatibility
+    try:
+        h5_path = f"{filepath}.weights.h5"
+        
+        # Manual layer-by-layer save for clean HDF5 structure
+        import h5py
+        with h5py.File(h5_path, 'w') as f:
+            for layer in model.layers:
+                if len(layer.weights) > 0:
+                    layer_group = f.create_group(layer.name)
+                    for weight in layer.weights:
+                        weight_name = weight.name.split('/')[-1].split(':')[0]
+                        layer_group.create_dataset(weight_name, data=weight.numpy())
+        
+        print(f"✓ Saved weights to: {h5_path} (HDF5 format)")
+        weights_saved = True
+    except Exception as e:
+        print(f"  Could not save .h5 format: {e}")
+    
+    if not weights_saved:
+        raise RuntimeError("Failed to save weights in any format!")
     
     # Save complete configuration
     config = {
@@ -235,38 +264,16 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
     print(f"✓ Saved configuration to: {config_path}")
     
     print(f"\nModel saved successfully!")
-    print(f"To load: model = load_model_complete('{filepath}')")
-
+    print(f"To load: model, dropout_layer, config = load_model_complete('{filepath}')")
 
 def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
     """
-    Load model weights and configuration.
-    
-    Parameters:
-    -----------
-    filepath : str
-        Base filepath (without extension), same as used in save_model_complete
-    compile_model : bool
-        Whether to compile the model (default: True)
-    learning_rate : float
-        Learning rate for optimizer if compiling (default: 0.001)
-    
-    Returns:
-    --------
-    model : keras.Model
-        Loaded model ready for inference or continued training
-    dropout_layer : keras.layers.Dropout
-        Reference to dropout layer
-    config : dict
-        Complete configuration dictionary
-    
-    Example:
-    --------
-    >>> model, dropout_layer, config = load_model_complete('smooth_dynamics_model')
-    >>> # Use for predictions
-    >>> predictions = model.predict([X_core, X_aux])
+    Load model weights and configuration - matches layers by position.
     """
     import json
+    import h5py
+    import numpy as np
+    import os
     
     # Load configuration
     config_path = f"{filepath}.config.json"
@@ -274,7 +281,7 @@ def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
         config = json.load(f)
     print(f"✓ Loaded configuration from: {config_path}")
     
-    # Rebuild model with same architecture
+    # Rebuild model
     model, dropout_layer = build_auxiliary_dropout_model(
         core_input_dim=config['input_architecture']['core_input_dim'],
         aux_input_dim=config['input_architecture']['aux_input_dim'],
@@ -294,18 +301,56 @@ def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
         )
         print(f"✓ Model compiled with learning_rate={learning_rate}")
     
-    # Load weights
-    weights_path = f"{filepath}.weights.h5"
-    model.load_weights(weights_path)
-    print(f"✓ Loaded weights from: {weights_path}")
+    # Load weights by position (ignore names)
+    h5_path = f"{filepath}.weights.h5"
     
-    print(f"\nModel loaded successfully!")
+    try:
+        # Try direct loading first
+        model.load_weights(h5_path)
+        print(f"✓ Loaded weights from: {h5_path}")
+        
+    except Exception as e:
+        print(f"  Standard loading failed, using position-based loading...")
+        
+        with h5py.File(h5_path, 'r') as f:
+            # Get all layers with weights from file (sorted by name)
+            file_layers = sorted([k for k in f.keys() if isinstance(f[k], h5py.Group)])
+            
+            # Get all model layers with weights
+            model_layers = [layer for layer in model.layers if len(layer.weights) > 0]
+            
+            print(f"  File has {len(file_layers)} layers, model has {len(model_layers)} layers")
+            
+            if len(file_layers) != len(model_layers):
+                raise ValueError(f"Layer count mismatch: {len(file_layers)} in file vs {len(model_layers)} in model")
+            
+            # Load by position
+            layers_loaded = 0
+            for file_layer_name, model_layer in zip(file_layers, model_layers):
+                layer_group = f[file_layer_name]
+                
+                # Get weights from file
+                weight_values = []
+                for weight in model_layer.weights:
+                    weight_name = weight.name.split('/')[-1].split(':')[0]
+                    if weight_name in layer_group:
+                        weight_values.append(np.array(layer_group[weight_name]))
+                    else:
+                        raise ValueError(f"Weight '{weight_name}' not found in layer '{file_layer_name}'")
+                
+                # Set weights
+                model_layer.set_weights(weight_values)
+                layers_loaded += 1
+                print(f"    ✓ Loaded {file_layer_name} → {model_layer.name}")
+            
+            print(f"✓ Loaded {layers_loaded} layers by position from: {h5_path}")
+    
+    print(f"\n✓ Model loaded successfully!")
     print(f"  Core input dim: {config['input_architecture']['core_input_dim']}")
     print(f"  Aux input dim: {config['input_architecture']['aux_input_dim']}")
-    print(f"  Jacobian weight: {config['training_parameters']['jacobian_weight']}")
-    print(f"  SV weight: {config['training_parameters']['sv_weight']}")
     
     return model, dropout_layer, config
+
 
 
 # ============================================================================
@@ -562,76 +607,60 @@ class CurriculumDropoutCallback(keras.callbacks.Callback):
 # MODEL BUILDING FUNCTION
 # ============================================================================
 
-def build_auxiliary_dropout_model(
-    core_input_dim,
-    aux_input_dim,
-    core_architecture,
-    aux_architecture,
-    combined_architecture,
-    dropout_layer_name='aux_dropout',
-    initial_dropout=0.1,
-    jacobian_weight=0.01,
-    sv_weight=0.01
-):
+def build_auxiliary_dropout_model(core_input_dim, aux_input_dim, 
+                                  core_architecture, aux_architecture, 
+                                  combined_architecture,
+                                  jacobian_weight=0.1, sv_weight=0.01):
     """
-    Build a model with separate core and auxiliary feature branches.
-    
-    Parameters:
-    -----------
-    core_input_dim : int
-        Dimension of core features (always available)
-    aux_input_dim : int
-        Dimension of auxiliary features (may not be available at inference)
-    core_architecture : list of dict
-        List of layer specs for core branch, e.g.:
-        [{'units': 16, 'activation': 'relu'}, {'units': 8, 'activation': 'relu'}]
-    aux_architecture : list of dict
-        List of layer specs for auxiliary branch (after dropout)
-    combined_architecture : list of dict
-        List of layer specs for combined features, including output layer
-    dropout_layer_name : str
-        Name for the dropout layer (used to access it for curriculum learning)
-    initial_dropout : float
-        Initial dropout rate (will be adjusted by curriculum callback)
-    jacobian_weight : float
-        Weight for Jacobian smoothness regularization
-    sv_weight : float
-        Weight for singular value regularization
-    
-    Returns:
-    --------
-    model : JacobianRegularizedModel
-        Compiled Keras model
-    dropout_layer : keras.layers.Dropout
-        Reference to dropout layer for curriculum learning
+    Build model with NAMED layers for consistent saving/loading.
     """
-    # Input layers
-    core_input = layers.Input(shape=(core_input_dim,), name='core_features')
-    aux_input = layers.Input(shape=(aux_input_dim,), name='aux_features')
+    # Input layers with explicit names
+    core_input = keras.Input(shape=(core_input_dim,), name='core_input')
+    aux_input = keras.Input(shape=(aux_input_dim,), name='aux_input')
     
-    # Core branch (no dropout)
+    # Core branch with explicit names
     core_branch = core_input
-    for layer_spec in core_architecture:
-        core_branch = layers.Dense(**layer_spec)(core_branch)
+    for i, layer_spec in enumerate(core_architecture):
+        core_branch = keras.layers.Dense(
+            layer_spec['units'], 
+            activation=layer_spec['activation'],
+            name=f'core_dense_{i}'  # Explicit name
+        )(core_branch)
     
-    # Auxiliary branch (with dropout)
-    dropout_layer = layers.Dropout(initial_dropout, name=dropout_layer_name)
-    aux_branch = dropout_layer(aux_input) #, training=True)
-    for layer_spec in aux_architecture:
-        aux_branch = layers.Dense(**layer_spec)(aux_branch)
+    # Auxiliary branch with explicit names
+    aux_branch = aux_input
+    for i, layer_spec in enumerate(aux_architecture):
+        aux_branch = keras.layers.Dense(
+            layer_spec['units'], 
+            activation=layer_spec['activation'],
+            name=f'aux_dense_{i}'  # Explicit name
+        )(aux_branch)
     
-    # Combine branches
-    combined = layers.concatenate([core_branch, aux_branch])
-    for layer_spec in combined_architecture:
-        combined = layers.Dense(**layer_spec)(combined)
+    # Concatenate with explicit name
+    combined = keras.layers.Concatenate(name='concatenate')([core_branch, aux_branch])
     
-    # Create model with Jacobian regularization
-    model = JacobianRegularizedModel(
-        inputs=[core_input, aux_input],
+    # Add dropout with explicit name
+    dropout_layer = keras.layers.Dropout(0.0, name='dropout')
+    combined = dropout_layer(combined)
+    
+    # Combined branch with explicit names
+    for i, layer_spec in enumerate(combined_architecture):
+        combined = keras.layers.Dense(
+            layer_spec['units'], 
+            activation=layer_spec['activation'],
+            name=f'combined_dense_{i}'  # Explicit name
+        )(combined)
+    
+    # Create model
+    model = keras.Model(
+        inputs=[core_input, aux_input], 
         outputs=combined,
-        jacobian_weight=jacobian_weight,
-        sv_weight=sv_weight
+        name='auxiliary_dropout_model'
     )
+    
+    # Add custom loss
+    model.add_loss(lambda: jacobian_weight * compute_jacobian_loss(model, core_input))
+    model.add_loss(lambda: sv_weight * compute_sv_loss(model, core_input))
     
     return model, dropout_layer
 
