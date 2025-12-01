@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
 
 # ============================================================================
 # FAST INFERENCE OPTIMIZATION
@@ -607,60 +606,85 @@ class CurriculumDropoutCallback(keras.callbacks.Callback):
 # MODEL BUILDING FUNCTION
 # ============================================================================
 
-def build_auxiliary_dropout_model(core_input_dim, aux_input_dim, 
-                                  core_architecture, aux_architecture, 
-                                  combined_architecture,
-                                  jacobian_weight=0.1, sv_weight=0.01):
+def build_auxiliary_dropout_model(
+    core_input_dim,
+    aux_input_dim,
+    core_architecture,
+    aux_architecture,
+    combined_architecture,
+    dropout_layer_name='aux_dropout',
+    initial_dropout=0.1,
+    jacobian_weight=0.01,
+    sv_weight=0.01
+):
     """
-    Build model with NAMED layers for consistent saving/loading.
+    Build a model with separate core and auxiliary feature branches.
+    
+    Parameters:
+    -----------
+    core_input_dim : int
+        Dimension of core features (always available)
+    aux_input_dim : int
+        Dimension of auxiliary features (may not be available at inference)
+    core_architecture : list of dict
+        List of layer specs for core branch, e.g.:
+        [{'units': 16, 'activation': 'relu'}, {'units': 8, 'activation': 'relu'}]
+    aux_architecture : list of dict
+        List of layer specs for auxiliary branch (after dropout)
+    combined_architecture : list of dict
+        List of layer specs for combined features, including output layer
+    dropout_layer_name : str
+        Name for the dropout layer (used to access it for curriculum learning)
+    initial_dropout : float
+        Initial dropout rate (will be adjusted by curriculum callback)
+    jacobian_weight : float
+        Weight for Jacobian smoothness regularization
+    sv_weight : float
+        Weight for singular value regularization
+    
+    Returns:
+    --------
+    model : JacobianRegularizedModel
+        Compiled Keras model
+    dropout_layer : keras.layers.Dropout
+        Reference to dropout layer for curriculum learning
     """
     # Input layers with explicit names
-    core_input = keras.Input(shape=(core_input_dim,), name='core_input')
-    aux_input = keras.Input(shape=(aux_input_dim,), name='aux_input')
+    core_input = keras.layers.Input(shape=(core_input_dim,), name='core_features')
+    aux_input = keras.layers.Input(shape=(aux_input_dim,), name='aux_features')
     
-    # Core branch with explicit names
+    # Core branch (no dropout) with explicit layer names
     core_branch = core_input
     for i, layer_spec in enumerate(core_architecture):
-        core_branch = keras.layers.Dense(
-            layer_spec['units'], 
-            activation=layer_spec['activation'],
-            name=f'core_dense_{i}'  # Explicit name
-        )(core_branch)
+        # Add explicit name to layer_spec
+        layer_spec_with_name = layer_spec.copy()
+        layer_spec_with_name['name'] = f'core_dense_{i}'
+        core_branch = keras.layers.Dense(**layer_spec_with_name)(core_branch)
     
-    # Auxiliary branch with explicit names
-    aux_branch = aux_input
+    # Auxiliary branch (with dropout) with explicit layer names
+    dropout_layer = keras.layers.Dropout(initial_dropout, name=dropout_layer_name)
+    aux_branch = dropout_layer(aux_input)
     for i, layer_spec in enumerate(aux_architecture):
-        aux_branch = keras.layers.Dense(
-            layer_spec['units'], 
-            activation=layer_spec['activation'],
-            name=f'aux_dense_{i}'  # Explicit name
-        )(aux_branch)
+        # Add explicit name to layer_spec
+        layer_spec_with_name = layer_spec.copy()
+        layer_spec_with_name['name'] = f'aux_dense_{i}'
+        aux_branch = keras.layers.Dense(**layer_spec_with_name)(aux_branch)
     
-    # Concatenate with explicit name
-    combined = keras.layers.Concatenate(name='concatenate')([core_branch, aux_branch])
-    
-    # Add dropout with explicit name
-    dropout_layer = keras.layers.Dropout(0.0, name='dropout')
-    combined = dropout_layer(combined)
-    
-    # Combined branch with explicit names
+    # Combine branches with explicit name
+    combined = keras.layers.concatenate([core_branch, aux_branch], name='concatenate')
     for i, layer_spec in enumerate(combined_architecture):
-        combined = keras.layers.Dense(
-            layer_spec['units'], 
-            activation=layer_spec['activation'],
-            name=f'combined_dense_{i}'  # Explicit name
-        )(combined)
+        # Add explicit name to layer_spec
+        layer_spec_with_name = layer_spec.copy()
+        layer_spec_with_name['name'] = f'combined_dense_{i}'
+        combined = keras.layers.Dense(**layer_spec_with_name)(combined)
     
-    # Create model
-    model = keras.Model(
-        inputs=[core_input, aux_input], 
+    # Create model with Jacobian regularization
+    model = JacobianRegularizedModel(
+        inputs=[core_input, aux_input],
         outputs=combined,
-        name='auxiliary_dropout_model'
+        jacobian_weight=jacobian_weight,
+        sv_weight=sv_weight
     )
-    
-    # Add custom loss
-    model.add_loss(lambda: jacobian_weight * compute_jacobian_loss(model, core_input))
-    model.add_loss(lambda: sv_weight * compute_sv_loss(model, core_input))
     
     return model, dropout_layer
 
