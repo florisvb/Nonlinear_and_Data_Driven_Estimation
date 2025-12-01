@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 
+import json
+import h5py
+import numpy as np
+import os
+
 # ============================================================================
 # FAST INFERENCE OPTIMIZATION
 # ============================================================================
@@ -182,71 +187,22 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
                        training_parameters):
     """
     Save model weights and complete configuration for easy reloading.
-    
-    Parameters:
-    -----------
-    model : keras.Model
-        Trained model to save
-    filepath : str
-        Base filepath (without extension), e.g., 'my_model'
-    core_architecture : list of dict
-        Core branch architecture specification
-    aux_architecture : list of dict
-        Auxiliary branch architecture specification
-    combined_architecture : list of dict
-        Combined branch architecture specification
-    input_architecture : dict
-        Dict with 'core_input_dim' and 'aux_input_dim'
-    training_parameters : dict
-        Dict with 'jacobian_weight' and 'sv_weight'
-    
-    Example:
-    --------
-    >>> save_model_complete(
-    ...     model=model,
-    ...     filepath='smooth_dynamics_model',
-    ...     core_architecture=core_architecture,
-    ...     aux_architecture=aux_architecture,
-    ...     combined_architecture=combined_architecture,
-    ...     input_architecture=input_architecture,
-    ...     training_parameters=training_parameters
-    ... )
     """
-    import json
     
-    # Save weights - try multiple formats for best compatibility
-    weights_saved = False
+    # Save weights manually layer-by-layer for maximum compatibility
+    h5_path = f"{filepath}.weights.h5"
     
-    # First, try the new .keras format (most compatible across versions)
-    try:
-        keras_path = f"{filepath}.weights.keras"
-        model.save_weights(keras_path)
-        print(f"✓ Saved weights to: {keras_path}")
-        weights_saved = True
-    except Exception as e:
-        print(f"  Could not save .keras format: {e}")
+    print("Saving weights layer-by-layer for compatibility...")
+    with h5py.File(h5_path, 'w') as f:
+        for layer in model.layers:
+            if len(layer.weights) > 0:
+                layer_group = f.create_group(layer.name)
+                for weight in layer.weights:
+                    weight_name = weight.name.split('/')[-1].split(':')[0]
+                    layer_group.create_dataset(weight_name, data=weight.numpy())
+                print(f"  Saved layer: {layer.name}")
     
-    # Also save as .h5 for backward compatibility
-    try:
-        h5_path = f"{filepath}.weights.h5"
-        
-        # Manual layer-by-layer save for clean HDF5 structure
-        import h5py
-        with h5py.File(h5_path, 'w') as f:
-            for layer in model.layers:
-                if len(layer.weights) > 0:
-                    layer_group = f.create_group(layer.name)
-                    for weight in layer.weights:
-                        weight_name = weight.name.split('/')[-1].split(':')[0]
-                        layer_group.create_dataset(weight_name, data=weight.numpy())
-        
-        print(f"✓ Saved weights to: {h5_path} (HDF5 format)")
-        weights_saved = True
-    except Exception as e:
-        print(f"  Could not save .h5 format: {e}")
-    
-    if not weights_saved:
-        raise RuntimeError("Failed to save weights in any format!")
+    print(f"✓ Saved weights to: {h5_path}")
     
     # Save complete configuration
     config = {
@@ -267,20 +223,19 @@ def save_model_complete(model, filepath, core_architecture, aux_architecture,
 
 def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
     """
-    Load model weights and configuration - matches layers by position.
+    Load model weights and configuration.
     """
-    import json
-    import h5py
-    import numpy as np
-    import os
     
     # Load configuration
     config_path = f"{filepath}.config.json"
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+    
     with open(config_path, 'r') as f:
         config = json.load(f)
     print(f"✓ Loaded configuration from: {config_path}")
     
-    # Rebuild model
+    # Rebuild model with explicit layer names
     model, dropout_layer = build_auxiliary_dropout_model(
         core_input_dim=config['input_architecture']['core_input_dim'],
         aux_input_dim=config['input_architecture']['aux_input_dim'],
@@ -300,49 +255,41 @@ def load_model_complete(filepath, compile_model=True, learning_rate=0.001):
         )
         print(f"✓ Model compiled with learning_rate={learning_rate}")
     
-    # Load weights by position (ignore names)
+    # Load weights from .h5 file
     h5_path = f"{filepath}.weights.h5"
     
-    try:
-        # Try direct loading first
-        model.load_weights(h5_path)
-        print(f"✓ Loaded weights from: {h5_path}")
+    if not os.path.exists(h5_path):
+        raise FileNotFoundError(f"Weights file not found: {h5_path}")
+    
+    print(f"Loading weights from: {h5_path}")
+    
+    # Load layer-by-layer (matches how we saved)
+    with h5py.File(h5_path, 'r') as f:
+        layers_loaded = 0
         
-    except Exception as e:
-        print(f"  Standard loading failed, using position-based loading...")
-        
-        with h5py.File(h5_path, 'r') as f:
-            # Get all layers with weights from file (sorted by name)
-            file_layers = sorted([k for k in f.keys() if isinstance(f[k], h5py.Group)])
-            
-            # Get all model layers with weights
-            model_layers = [layer for layer in model.layers if len(layer.weights) > 0]
-            
-            print(f"  File has {len(file_layers)} layers, model has {len(model_layers)} layers")
-            
-            if len(file_layers) != len(model_layers):
-                raise ValueError(f"Layer count mismatch: {len(file_layers)} in file vs {len(model_layers)} in model")
-            
-            # Load by position
-            layers_loaded = 0
-            for file_layer_name, model_layer in zip(file_layers, model_layers):
-                layer_group = f[file_layer_name]
+        for layer in model.layers:
+            if len(layer.weights) > 0:
+                if layer.name not in f:
+                    print(f"  ⚠ Warning: Layer '{layer.name}' not found in file")
+                    continue
                 
-                # Get weights from file
+                layer_group = f[layer.name]
                 weight_values = []
-                for weight in model_layer.weights:
+                
+                for weight in layer.weights:
                     weight_name = weight.name.split('/')[-1].split(':')[0]
                     if weight_name in layer_group:
                         weight_values.append(np.array(layer_group[weight_name]))
                     else:
-                        raise ValueError(f"Weight '{weight_name}' not found in layer '{file_layer_name}'")
+                        print(f"  ⚠ Warning: Weight '{weight_name}' not found in layer '{layer.name}'")
+                        break
                 
-                # Set weights
-                model_layer.set_weights(weight_values)
-                layers_loaded += 1
-                print(f"    ✓ Loaded {file_layer_name} → {model_layer.name}")
-            
-            print(f"✓ Loaded {layers_loaded} layers by position from: {h5_path}")
+                if len(weight_values) == len(layer.weights):
+                    layer.set_weights(weight_values)
+                    layers_loaded += 1
+                    print(f"  ✓ Loaded: {layer.name}")
+        
+        print(f"\n✓ Loaded {layers_loaded} layers from: {h5_path}")
     
     print(f"\n✓ Model loaded successfully!")
     print(f"  Core input dim: {config['input_architecture']['core_input_dim']}")
