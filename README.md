@@ -2,9 +2,21 @@
 
 A comprehensive course on nonlinear and data-driven estimation techniques taught by Floris van Breugel. This repository contains Jupyter notebooks, Python implementations, and practical examples covering fundamental concepts from batch estimation to advanced data-driven techniques using neural networks and dimensionality reduction.
 
-The course is designed to follow a single example, a planar drone, throughout the sequence of lessons to help build intuition and see how the tools stack together. This example is intended to serve as a template for how other projects can be applied to the sequence of lessons. 
-
 ![course overview](images/nonlinear_estimation_course_overview.png)
+
+## 📚 Course Progression
+
+The course is designed to follow a single example, a planar drone, throughout the sequence of lessons to help build intuition and see how the tools stack together. This example is intended to serve as a template for how other projects can be applied to the sequence of lessons. The course material is designed to build progressively:
+
+**Foundation (Lessons 1-6):** Classical estimation theory, from batch least squares to the Kalman filter
+
+**Observability Analysis (Lessons 7-8):** Understanding what can be estimated from available measurements
+
+**Nonlinear Filtering (Lessons 9-10):** Extended and Unscented Kalman Filters for nonlinear systems
+
+**Data-Driven Methods (Lessons 11-16):** Machine learning approaches including ANNs and SINDy
+
+**Dimensionality Reduction (Lessons 17-18):** Dimensionality reduction and reduced-order estimation for ANNs
 
 ## 📚 Getting Started
 
@@ -250,26 +262,12 @@ Each lesson directory contains:
 ```bash
 git clone https://github.com/florisvb/Nonlinear_and_Data_Driven_Estimation.git
 cd Nonlinear_and_Data_Driven_Estimation
-# Install dependencies (requirements.txt recommended)
+# Install dependencies -- see `requirements_minimal.txt` and `Utility/Requirements`
 jupyter notebook
 ```
 
 ### Option 2: Google Colab
-Most notebooks can be run directly in Google Colab. See [github_colab_tips.md](github_colab_tips.md) for instructions.
-
-## 📚 Course Progression
-
-The course is designed to build progressively:
-
-**Foundation (Lessons 1-5):** Classical estimation theory, from batch least squares to the Kalman filter
-
-**Observability Analysis (Lessons 6-8):** Understanding what can be estimated from available measurements
-
-**Nonlinear Filtering (Lessons 9-10):** Extended and Unscented Kalman Filters for nonlinear systems
-
-**Data-Driven Methods (Lessons 11-16):** Machine learning approaches including ANNs and SINDy
-
-**Dimensionality Reduction (Lessons 17-18):** Dimensionality reduction and reduced-order estimation for ANNs
+All notebooks can be run directly in Google Colab. See [github_colab_tips.md](github_colab_tips.md) for instructions.
 
 ## 👨‍🏫 About
 
@@ -286,10 +284,6 @@ This work is licensed under [Creative Commons Attribution-NonCommercial-ShareAli
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page or submit pull requests.
-
-## 📧 Contact
-
-For questions about the course content, please contact the instructor or open an issue in this repository.
 
 ---
 
