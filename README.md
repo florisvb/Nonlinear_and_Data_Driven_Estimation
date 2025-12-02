@@ -1,8 +1,10 @@
 # Nonlinear and Data Driven Estimation
 
-A comprehensive course on nonlinear and data-driven estimation techniques taught at the University of Nevada, Reno (UNR). This repository contains Jupyter notebooks, Python implementations, and practical examples covering fundamental concepts from batch estimation to advanced data-driven techniques using neural networks and dimensionality reduction.
+A comprehensive course on nonlinear and data-driven estimation techniques taught by Floris van Breugel. This repository contains Jupyter notebooks, Python implementations, and practical examples covering fundamental concepts from batch estimation to advanced data-driven techniques using neural networks and dimensionality reduction.
 
 The course is designed to follow a single example, a planar drone, throughout the sequence of lessons to help build intuition and see how the tools stack together. This example is intended to serve as a template for how other projects can be applied to the sequence of lessons. 
+
+![course overview](images/nonlinear_estimation_course_overview.png)
 
 ## 📚 Getting Started
 
