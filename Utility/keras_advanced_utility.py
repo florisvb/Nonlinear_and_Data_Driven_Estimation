@@ -826,7 +826,8 @@ def visualize_results(
     y_test,
     model,
     X_core_test,
-    X_aux_test
+    X_aux_test,
+    fontsize=8,
 ):
     """
     Create comprehensive visualization of training and results.
@@ -863,8 +864,8 @@ def visualize_results(
     jacobian_norms = np.linalg.norm(jacobian_test, axis=1)
     
     # Create figure
-    fig = plt.figure(figsize=(16, 12))
-    gs = fig.add_gridspec(4, 3, hspace=0.3, wspace=0.3)
+    fig = plt.figure(figsize=(12, 10))
+    gs = fig.add_gridspec(4, 3, hspace=0.4, wspace=0.4)
     
     # Row 1: Training dynamics
     ax1 = fig.add_subplot(gs[0, 0])
@@ -894,7 +895,7 @@ def visualize_results(
     ax1.grid(True, alpha=0.3)
     ax1.axhline(y=curriculum_callback.final_rate, color='r', linestyle='--', 
                 alpha=0.5, label='Target rate')
-    ax1.legend()
+    ax1.legend(fontsize=int(fontsize*2/3))
     
     # Performance over time
     ax2.plot(curriculum_callback.mae_with_aux_history, 
@@ -904,7 +905,7 @@ def visualize_results(
     ax2.set_xlabel('Epoch')
     ax2.set_ylabel('Validation MAE')
     ax2.set_title('Performance Over Time')
-    ax2.legend()
+    ax2.legend(fontsize=int(fontsize*2/3))
     ax2.grid(True, alpha=0.3)
     
     # Performance gap
@@ -945,8 +946,8 @@ def visualize_results(
         ax10_twin.set_ylabel('Singular Value Loss', color='orange')
         ax10.set_title('Regularization Losses Over Time')
         ax10.grid(True, alpha=0.3)
-        ax10.legend(loc='upper left')
-        ax10_twin.legend(loc='upper right')
+        ax10.legend(loc='upper left', fontsize=int(fontsize*2/3))
+        ax10_twin.legend(loc='upper right', fontsize=int(fontsize*2/3))
     
     # Singular value distribution
     ax11.hist(jacobian_norms, bins=30, color='purple', alpha=0.7, edgecolor='black')
@@ -955,8 +956,8 @@ def visualize_results(
     ax11.axvline(1.0, color='green', linestyle='--', linewidth=2, label='Target (1.0)')
     ax11.set_xlabel('Jacobian Norm (Singular Value)')
     ax11.set_ylabel('Frequency')
-    ax11.set_title(f'Singular Value Distribution\nMean: {jacobian_norms.mean():.4f}')
-    ax11.legend()
+    ax11.set_title(f'Singular Value Distribution Mean: {jacobian_norms.mean():.4f}')
+    ax11.legend(fontsize=int(fontsize*2/3))
     ax11.grid(True, alpha=0.3, axis='y')
     
     # Jacobian vs features
@@ -966,8 +967,14 @@ def visualize_results(
     ax12.set_xlabel('Input Feature Value')
     ax12.set_ylabel('Jacobian (∂output/∂input)')
     ax12.set_title('Jacobian Values vs Input Features\n(Should be large but smooth)')
-    ax12.legend(fontsize=8)
+    ax12.legend(fontsize=int(fontsize*2/3))
     ax12.grid(True, alpha=0.3)
+
+    all_axes = fig.axes
+    for ax in all_axes:
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                 ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(fontsize=fontsize)
     
     plt.tight_layout()
     plt.savefig('curriculum_dropout_results.png', dpi=150, bbox_inches='tight')
@@ -981,7 +988,7 @@ def plot_predictions(ax, y_true, y_pred, mae, title, color):
             [y_true.min(), y_true.max()], 'r--', lw=2)
     ax.set_xlabel('True Values')
     ax.set_ylabel('Predictions')
-    ax.set_title(f'{title}\nMAE: {mae:.4f}')
+    ax.set_title(f'{title} MAE: {mae:.4f}')
     ax.grid(True, alpha=0.3)
 
 
@@ -992,7 +999,6 @@ def plot_comparison_bars(ax, mae_without, mae_with, title):
     ax.set_ylabel('MAE')
     ax.set_title(title)
     ax.grid(True, alpha=0.3, axis='y')
-
 
 # ============================================================================
 # EXAMPLE USAGE
