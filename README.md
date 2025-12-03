@@ -26,14 +26,20 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 
 ## 📖 Course Contents
 
+
+### Lesson 0: Notebook Setup
+**Topics:**
+- Introduction to google colab notebook environment
+- Introduction to installing and important python packages and custom utilities
+
+---
+
 ### Lesson 1: Dynamics Demo
 **Topics:**
 - Planar drone dynamics modeling and simulation
 - Control affine system representation
 - Animation and visualization of dynamical systems
-- Introduction to PyBounds for constraint handling
-
-**Key Notebooks:** `A_planar_drone_dynamics.ipynb`, `B_planar_drone_animation.ipynb`
+- Introduction to PyBounds for using Model Predictive Control
 
 ---
 
@@ -44,18 +50,12 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 - Statistical foundations of least squares estimation
 - Error analysis and uncertainty quantification
 
-**Key Notebooks:** `A_Example_Parameter_Estimation.ipynb`, `B_Linear_Least_Squares.ipynb`, `C_Linear_Least_Squares_Statistics.ipynb`
-
 ---
 
 ### Lesson 3: Sequential Least Squares
 **Topics:**
 - Linear sequential estimation algorithms
 - Random variables and covariance analysis
-- Recursive parameter estimation
-- Transition from batch to sequential processing
-
-**Key Notebooks:** `A_Linear_Sequential.ipynb`, `B_Random_Variables_Covariance.ipynb`
 
 ---
 
@@ -63,10 +63,6 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 **Topics:**
 - Minimum variance estimation theory
 - Cramér-Rao Lower Bound (CRLB)
-- Performance bounds for estimators
-- Optimal estimator design
-
-**Key Notebooks:** `A_Minimum_Variance_Estimation.ipynb`, `B_Cramer_Rao_Bound.ipynb`
 
 ---
 
@@ -77,51 +73,35 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 - Discrete-time Kalman filter derivation and implementation
 - Understanding Kalman filter limitations
 
-**Key Notebooks:** `A_linearizing_and_discretizing_dynamics.ipynb`, `B_discrete_linear_kalman_filter.ipynb`, `C_breaking_the_linear_kalman_filter.ipynb`
-
 ---
 
 ### Lesson 6: Linear Observability
 **Topics:**
 - Observability fundamentals for linear systems
-- Observability matrix analysis
-- Observability Gramian
-- Determining state observability from measurements
-
-**Key Notebooks:** `A_Linear_Observability.ipynb`
-
+- Observability matrix and Gramian
+  
 ---
 
 ### Lesson 7: Analytical Nonlinear Observability
 **Topics:**
-- Symbolic computation for nonlinear observability
-- Nonlinear observability analysis
+- Nonlinear observability analysis using symbolic computation
 - Monocular camera example case study
-- Analytical observability conditions
-
-**Key Notebooks:** `A_symbolic_nonlinear_observability.ipynb`
 
 ---
 
 ### Lesson 8: Empirical Nonlinear Observability
 **Topics:**
 - Empirical observability matrix computation
-- Data-driven observability analysis
 - PyBounds framework for empirical analysis
 - Custom simulator integration with PyBounds
-
-**Key Notebooks:** `A_empirical_nonlinear_observability.ipynb`, `B_empirical_nonlinear_observability_pybounds.ipynb`, `C_pybounds_with_custom_simulator_tutorial.ipynb`
-
+  
 ---
 
 ### Lesson 9: Extended Kalman Filter
 **Topics:**
 - Extended Kalman Filter (EKF) theory
-- Linearization of nonlinear dynamics
 - EKF implementation for planar drone
 - Comparison with linear Kalman filter
-
-**Key Notebooks:** `A_planar_drone_EKF.ipynb`
 
 ---
 
@@ -130,20 +110,13 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 - Unscented Kalman Filter (UKF) algorithm
 - Sigma point generation and propagation
 - Comparison of EKF vs. UKF performance
-- Monocular camera state estimation
-
-**Key Notebooks:** `A_planar_drone_EKF_UKF.ipynb`, `A_planar_drone_EKF_UKF_monocamera.ipynb`
 
 ---
 
 ### Lesson 11: Generating Training Data
 **Topics:**
-- Synthetic data generation for machine learning
 - Training dataset creation from simulations
 - Data visualization and validation
-- Preparing data for neural network training
-
-**Key Notebooks:** `A_generate_training_data_demo.ipynb`, `B_visualize_training_data.ipynb`
 
 ---
 
@@ -154,18 +127,12 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 - Training and evaluating ANN estimators
 - Application to planar drone altitude estimation
 
-**Key Notebooks:** `A_planar_drone_altitude_ANN.ipynb`, `B_Evaluate_ANN_Estimator.ipynb`
-
 ---
 
 ### Lesson 13: AI Kalman Filter
 **Topics:**
 - Hybrid AI-Kalman filtering approaches
 - Integrating neural networks with UKF
-- Data-driven process and measurement models
-- Enhanced state estimation with learned models
-
-**Key Notebooks:** `A_planar_drone_AI_UKF.ipynb`
 
 ---
 
@@ -174,54 +141,37 @@ New to the course? Check out our [**Tips on Getting Started with GitHub, Google 
 - Numerical differentiation from noisy data
 - PyNumDiff library and methods
 - Smoothing and filtering techniques
-- Application to velocity estimation from position data
-
-**Key Notebooks:** `A_planar_drone_pynumdiff.ipynb`
 
 ---
 
 ### Lesson 15: SINDy (Sparse Identification of Nonlinear Dynamics)
 **Topics:**
-- Discovering governing equations from data
+- Discovering governing equations from data 
 - PySINDy library for sparse regression
-- Learning dynamics models from observations
-- Learning measurement models
+- Learning dynamics and measurement models from data
 - Integration with UKF for state estimation
-
-**Key Notebooks:** `A_planar_drone_pysindy_dynamics_model.ipynb`, `B_planar_drone_pysindy_measurement_model.ipynb`, `C_planar_drone_pysindy_UKF.ipynb`
 
 ---
 
 ### Lesson 16: Artificial Neural Network Models
 **Topics:**
-- Neural network-based dynamics models
-- Neural network-based measurement models
+- Neural network-based dynamics and measurement models
 - Data-driven UKF with learned models
-- End-to-end learning for state estimation
-
-**Key Notebooks:** `A_keras_dynamics_model.ipynb`, `B_keras_measurement_model.ipynb`, `C_data_driven_UKF.ipynb`
 
 ---
 
 ### Lesson 17: Dimensionality Reduction with SVD
 **Topics:**
-- Singular Value Decomposition (SVD) theory
+- Singular Value Decomposition (SVD) theory for compression
 - Terrain and optic flow data analysis
-- SVD-based compression techniques
 - Reduced-order representations of high-dimensional data
-
-**Key Notebooks:** `A_terrain_and_optic_flow_for_planar_drone.ipynb`, `B_SVD_compression_of_optic_flow.ipynb`
 
 ---
 
 ### Lesson 18: Reduced-Order ANN Estimator
 **Topics:**
-- Combining dimensionality reduction with neural networks
-- Reduced-order modeling (ROM) for state estimation
 - ANN training on compressed representations
 - Performance evaluation of ROM-ANN estimators
-
-**Key Notebooks:** `A_planar_drone_ray_distance_ANN_with_ROM.ipynb`, `B_evaluate_ROM_ANN.ipynb`
 
 ---
 
@@ -255,6 +205,7 @@ Each lesson directory contains:
 - Solution notebooks (marked with `_SOLUTION` or `_SOLUTIONS`)
 - PDF lecture notes and derivations
 - README files with additional context
+- Links to text and video references
 
 ## 🚀 Running the Code
 
